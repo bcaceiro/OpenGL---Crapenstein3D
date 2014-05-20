@@ -12,3 +12,5 @@
 *.plist
 
 *.1
+
+*.xcodeproj
