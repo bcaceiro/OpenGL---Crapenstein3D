@@ -1,8 +1,7 @@
 #include <stdio.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/freeglut.h>
+#include <stdlib.h>
 #include <math.h>
+#include "OpenGLIncludes.h"
 
 //
 GLfloat r,g,b;
