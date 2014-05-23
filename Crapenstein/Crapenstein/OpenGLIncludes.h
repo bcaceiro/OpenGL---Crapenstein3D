@@ -13,8 +13,9 @@
 #include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #else
-#include <GL/glut.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/freeglut.h>
 #endif
 
 #endif
