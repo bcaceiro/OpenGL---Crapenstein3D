@@ -9,8 +9,8 @@ UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
 	INCLUDES = -I/usr/local/include/GLFW/
-	OTHERLIBS = -L/usr/local/lib/ -lglfw3 -lXxf86vm -lGLEW
-	LIBS =  lGL -lGLU -lX11 -lpthread -lXi -lXrandr
+	OTHERLIBS = -L/usr/local/lib/ -lglfw3 -lXxf86vm -lGLEW -lXi -lXrandr
+	LIBS =  -lpthread  -lX11 -lglut -lGL -lGLU -lm
 	CPP=g++
 endif
 ifeq ($(UNAME_S),Darwin)
@@ -27,7 +27,8 @@ SOURCES_CXX=*.cxx
 all: clean $(PROGRAM)
 
 clean:
-	rm -rf *.o $(PROGRAM) 2>&1 > /dev/null
+	rm -rf *.o $(PROGRAM)
+#2>&1 > /dev/null
 
 $(PROGRAM):
 	$(CPP) $(INCLUDES) $(LIBS) $(SOURCES_CPP) -o $(PROGRAM)
