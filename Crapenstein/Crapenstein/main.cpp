@@ -30,8 +30,8 @@ char     texto[30];
 //------------------------------------------------------------ Observador
 GLfloat  PI = 3.14159;
 GLfloat  rVisao=3.0, aVisao=0.5*PI, incVisao=0.1;
-GLfloat  obsPini[] ={0, 0, 0.5*xC};
-GLfloat  obsPfin[] ={obsPini[0]-rVisao*cos(aVisao), obsPini[1], obsPini[2]-rVisao*sin(aVisao)};
+GLfloat  obsPini[] ={0.0f, 0.0f, 0.5f*xC};
+GLfloat  obsPfin[] ={obsPini[0]-rVisao*(float)cos(aVisao), obsPini[1], obsPini[2]-rVisao*(float)sin(aVisao)};
 
 //------------------------------------------------------------ Texturas e Rotacao
 GLfloat   quadS   = 4.0;
@@ -61,7 +61,7 @@ GLfloat rFoco=1.1, aFoco=aVisao;
 GLfloat incH =0.0, incV=0.0;
 GLfloat incMaxH =0.5, incMaxV=0.35;
 GLfloat focoPini[]= { obsPini[0], obsPini[1], obsPini[2], 1.0 };
-GLfloat focoPfin[]={ obsPini[0]-rFoco*cos(aFoco), obsPini[1], obsPini[2]-rFoco*sin(aFoco), 1.0};
+GLfloat focoPfin[]={ obsPini[0]-rFoco*(float)cos(aFoco), obsPini[1], obsPini[2]-rFoco*(float)sin(aFoco), 1.0};
 GLfloat focoDir[] = { focoPfin[0]-focoPini[0], 0, focoPfin[2]-focoPini[2]};
 GLfloat focoExp   = 10.0;
 GLfloat focoCut   = 15.0;
