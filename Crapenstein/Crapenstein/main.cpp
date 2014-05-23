@@ -145,7 +145,6 @@ int main(int argc, char **argv)
     glutDisplayFunc(draw);
     glutKeyboardFunc(keypressed);
     glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events
-
     glutMainLoop();
 
     return 0;

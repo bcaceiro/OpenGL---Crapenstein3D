@@ -7,3 +7,8 @@
 *.1
 *.xcodeproj
 *.exe
+Crapenstein.config
+Crapenstein.creator
+Crapenstein.creator.user
+Crapenstein.files
+Crapenstein.includes
