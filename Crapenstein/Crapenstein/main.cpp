@@ -57,6 +57,72 @@ GLuint  texture[2];
 GLuint  tex;
 RgbImage imag;
 
+//====================================================
+//KEYBOARD
+GLboolean keyStates[256]; // Create an array of boolean values of length 256 (0-255)
+GLboolean specialKeyStates[256]; //Create an array of boolean values
+
+void keyboard(){
+
+    if(keyStates['R']){
+        glutPostRedisplay();
+    }//--------------------------- Textura no azulejo
+    if(keyStates['T']){
+        glutPostRedisplay();
+    }
+    if(keyStates['Q']){
+        defineProj=(defineProj+1)%2;
+        glutPostRedisplay();
+    }
+    if(keyStates[27]){
+        exit(0);
+    }
+}
+
+void teclasNotAscii(){
+    if(specialKeyStates[GLUT_KEY_UP])
+        obsP[1]=obsP[1]+incy;
+    if(specialKeyStates[GLUT_KEY_DOWN])
+        obsP[1]=obsP[1]-incy;
+    if(specialKeyStates[GLUT_KEY_LEFT])
+        angulo=angulo+inca;
+    if(specialKeyStates[GLUT_KEY_RIGHT])
+        angulo=angulo-inca;
+
+    if (obsP[1]> yC)
+        obsP[1]= yC;
+    if (obsP[1]<-yC)
+        obsP[1]=-yC;
+    obsP[0] = raio*cos(angulo);
+    obsP[2] = raio*sin(angulo);
+
+    glutPostRedisplay();
+}
+
+void keypressed(unsigned char key, int x, int y)
+{
+    keyStates[key] = 1; // Set the state of the current key to pressed
+    keyboard();
+}
+
+void keyUp(unsigned char key, int x, int y)
+{
+    keyStates[key] = 0; // Set the state of the current key to pressed
+}
+void specialkeypressed(int key, int x, int y)
+{
+    specialKeyStates[key] = 1; // Set the state of the current key to pressed
+    teclasNotAscii();
+}
+
+void specialkeyUp(int key, int x, int y)
+{
+    specialKeyStates[key] = 0; // Set the state of the current key to pressed
+}
+
+
+
+//=====================================================================
 
 void criaDefineTexturas()
 {   
@@ -85,8 +151,8 @@ void criaDefineTexturas()
 	imag.LoadBmpFile("assets/chao.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 	imag.GetNumCols(),
-		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-		imag.ImageData());
+    imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+    imag.ImageData());
 
 	//*****************************************************
 	// A IMPLEMENTAR PELOS ALUNOS
@@ -177,7 +243,8 @@ void drawScene(){
 }
 
 void display(void){
-  	
+    teclasNotAscii();
+    keyboard();
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Apagar ]
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	
@@ -199,7 +266,7 @@ void display(void){
 	gluLookAt(obsP[0], obsP[1], obsP[2], 0,0,0, 0, 1, 0);
 	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
-	drawScene();
+    drawScene();
 	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Actualizacao
 	glutSwapBuffers();
@@ -214,51 +281,8 @@ void Timer(int value)
 }
 
 //======================================================= EVENTOS
-void keyboard(unsigned char key, int x, int y){
-	
-	switch (key) {
-	//--------------------------- Textura no quadro
-	case 'r':
-	case 'R':
-		glutPostRedisplay();
-		break;
-	//--------------------------- Textura no azulejo
-	case 't':
-	case 'T':
-		glutPostRedisplay();
-		break;
-	//--------------------------- Projeccao
-	case 'q':
-	case 'Q':
-		defineProj=(defineProj+1)%2;
-		glutPostRedisplay();
-		break;
-	//--------------------------- Escape
-	case 27:
-		exit(0);
-		break;	
-  }
-}
 
-void teclasNotAscii(int key, int x, int y){
-    if(key == GLUT_KEY_UP)
-		obsP[1]=obsP[1]+incy; 
-	if(key == GLUT_KEY_DOWN) 
-		obsP[1]=obsP[1]-incy; 
-	if(key == GLUT_KEY_LEFT)
-		angulo=angulo+inca; 
-	if(key == GLUT_KEY_RIGHT) 
-		angulo=angulo-inca; 
 
-	if (obsP[1]> yC)
-		obsP[1]= yC;
-    if (obsP[1]<-yC)
-		obsP[1]=-yC;
-    obsP[0] = raio*cos(angulo);
-	obsP[2] = raio*sin(angulo);
-	
-	glutPostRedisplay();	
-}
 
 //======================================================= MAIN
 int main(int argc, char** argv){
@@ -270,11 +294,16 @@ int main(int argc, char** argv){
 	glutCreateWindow ("{jh,pjmm}@dei.uc.pt-CG ::::::::::::::: (left,right,up,down, 'q', 'r', 't)' ");
   
 	init();
-	
-	glutSpecialFunc(teclasNotAscii); 
+
+    //add keyboard listeners
+    glutKeyboardFunc(keypressed);
+    glutKeyboardUpFunc(keyUp);
+    glutSpecialFunc(specialkeypressed);
+    glutSpecialUpFunc(specialkeyUp);
+
+    //rt
 	glutDisplayFunc(display); 
 	glutReshapeFunc(resizeWindow);
-	glutKeyboardFunc(keyboard);
 	glutTimerFunc(msec, Timer, 1);
 
 	glutMainLoop();
