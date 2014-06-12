@@ -3,6 +3,7 @@
 #include <math.h>
 #include "OpenGLIncludes.h"
 #include "Wall.h"
+#include "Camera.h"
 #include "RgbImage.h"
 
 
@@ -121,6 +122,18 @@ void specialkeyUp(int key, int x, int y)
 
 
 Wall merda;
+Camera g_camera;
+bool g_key[256];
+bool g_shift_down = false;
+bool g_fps_mode = true;
+int g_viewport_width = 0;
+int g_viewport_height = 0;
+bool g_mouse_left_down = false;
+bool g_mouse_right_down = false;
+
+// Movement settings
+const float g_translation_speed = 0.05;
+const float g_rotation_speed = M_PI/180*0.2;
 //=====================================================================
 
 void criaDefineTexturas()
@@ -247,26 +260,20 @@ void display(void){
     teclasNotAscii();
     keyboard();
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Apagar ]
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Janela Visualizacao ]
-	glViewport (0,0,wScreen, hScreen);
+    glClearColor (0.0,0.0,0.0,1.0); //clear the screen to black
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
+    glLoadIdentity();
 
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Projeccao]
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	switch (defineProj) {
-		case 1: gluPerspective(88.0, wScreen/hScreen, 0.1, zC); break;
-		default: glOrtho (-xC,xC,-yC,yC,-zC,zC);
-			break;
-	}
-	
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Modelo+View(camera/observador) ]
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(obsP[0], obsP[1], obsP[2], 0,0,0, 0, 1, 0);
-	
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
+    if(g_fps_mode) {
+        glutSetCursor(GLUT_CURSOR_NONE);
+        glutWarpPointer(g_viewport_width/2, g_viewport_height/2);
+    }
+    else {
+        glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+    }
+
+    g_camera.Refresh();
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
     drawScene();
 	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Actualizacao
@@ -282,7 +289,65 @@ void Timer(int value)
 }
 
 //======================================================= EVENTOS
+void MouseMotion(int x, int y)
+{
+    // This variable is hack to stop glutWarpPointer from triggering an event callback to Mouse(...)
+    // This avoids it being called recursively and hanging up the event loop
+    static bool just_warped = false;
 
+    if(just_warped) {
+        just_warped = false;
+        return;
+    }
+
+    if(g_fps_mode) {
+        int dx = x - g_viewport_width/2;
+        int dy = y - g_viewport_height/2;
+
+        if(dx) {
+            g_camera.RotateYaw(g_rotation_speed*dx);
+        }
+
+        if(dy) {
+            g_camera.RotatePitch(g_rotation_speed*dy);
+        }
+
+        glutWarpPointer(g_viewport_width/2, g_viewport_height/2);
+
+        just_warped = true;
+    }
+}
+void Mouse(int button, int state, int x, int y)
+{
+    if(state == GLUT_DOWN) {
+        if(button == GLUT_LEFT_BUTTON) {
+            g_mouse_left_down = true;
+        }
+        else if(button == GLUT_RIGHT_BUTTON) {
+            g_mouse_right_down = true;
+        }
+    }
+    else if(state == GLUT_UP) {
+        if(button == GLUT_LEFT_BUTTON) {
+            g_mouse_left_down = false;
+        }
+        else if(button == GLUT_RIGHT_BUTTON) {
+            g_mouse_right_down = false;
+        }
+    }
+}
+
+void Reshape (int w, int h) {
+    g_viewport_width = w;
+    g_viewport_height = h;
+
+    glViewport (0, 0, (GLsizei)w, (GLsizei)h); //set the viewport to the current window specifications
+    glMatrixMode (GL_PROJECTION); //set the matrix to projection
+
+    glLoadIdentity ();
+    gluPerspective (60, (GLfloat)w / (GLfloat)h, 0.1 , 100.0); //set the perspective (angle of sight, width, height, ,depth)
+    glMatrixMode (GL_MODELVIEW); //set the matrix back to model
+}
 
 
 //======================================================= MAIN
@@ -293,6 +358,7 @@ int main(int argc, char** argv){
 	glutInitWindowSize (wScreen, hScreen); 
 	glutInitWindowPosition (100, 100); 
 	glutCreateWindow ("{jh,pjmm}@dei.uc.pt-CG ::::::::::::::: (left,right,up,down, 'q', 'r', 't)' ");
+        glutReshapeFunc(Reshape);
   
 	init();
 
@@ -302,6 +368,10 @@ int main(int argc, char** argv){
     glutSpecialFunc(specialkeypressed);
     glutSpecialUpFunc(specialkeyUp);
 
+    //mouse
+    glutMouseFunc(Mouse);
+    glutMotionFunc(MouseMotion);
+    glutPassiveMotionFunc(MouseMotion);
     //rt
 	glutDisplayFunc(display); 
 	glutReshapeFunc(resizeWindow);
