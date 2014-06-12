@@ -13,11 +13,13 @@ ifeq ($(UNAME_S),Linux)
 	LIBS =  -lX11 -lglut -lGL -lGLU -lm
 	CPP=g++
 endif
-#ifeq ($(UNAME_S),Darwin)
-#	INCLUDES = -I/usr/local/include -I/usr/local/include/GLFW
-#	LIBS = -lglew -lglfw3 -framework opengl  
-#	CPP=clang++
-#endif
+
+ifeq ($(UNAME_S),Darwin)
+	INCLUDES = -I/usr/local/include -I/usr/local/include/GLFW
+	LIBS = -framework opengl 
+	LIBS += -framework GLUT
+	CPP=clang++
+endif
 
 PROGRAM=project.exe
 
