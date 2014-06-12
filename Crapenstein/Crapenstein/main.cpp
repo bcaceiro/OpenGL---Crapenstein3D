@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "OpenGLIncludes.h"
-
+#include "Wall.h"
 #include "RgbImage.h"
 
 
@@ -114,14 +114,13 @@ void specialkeypressed(int key, int x, int y)
     specialKeyStates[key] = 1; // Set the state of the current key to pressed
     teclasNotAscii();
 }
-
 void specialkeyUp(int key, int x, int y)
 {
     specialKeyStates[key] = 0; // Set the state of the current key to pressed
 }
 
 
-
+Wall merda;
 //=====================================================================
 
 void criaDefineTexturas()
@@ -215,7 +214,9 @@ void drawScene(){
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 
-	
+    merda.draw();
+
+
 	//*****************************************************
 	// A IMPLEMENTAR PELOS ALUNOS
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chaleira
@@ -305,7 +306,7 @@ int main(int argc, char** argv){
 	glutDisplayFunc(display); 
 	glutReshapeFunc(resizeWindow);
 	glutTimerFunc(msec, Timer, 1);
-
+    merda = Wall();
 	glutMainLoop();
 
 	return 0;
