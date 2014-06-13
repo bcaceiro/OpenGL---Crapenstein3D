@@ -1,10 +1,72 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+/*
+FPS control demo in GLUT by Nghia Ho
+
+SPACEBAR - toggle FPS control
+W,A,S,D - to move
+mouse - look around, inverted mouse
+left/right mouse - fly up/down
+ESC - quit
+
+*/
+
 #include "OpenGLIncludes.h"
-#include "Wall.h"
+#include <iostream>
+#include <cmath>
 #include "Camera.h"
+#include "Wall.h"
 #include "RgbImage.h"
+
+using namespace std;
+
+void Display();
+void Reshape (int w, int h);
+
+void Timer(int value);
+void Idle();
+
+Camera* camera;
+
+bool keyStates[256];
+bool specialKeyStates[25];
+bool g_mouse_left_down = false;
+bool g_mouse_right_down = false;
+bool g_shift_down = false;
+bool g_fps_mode = false;
+// Movement settings
+const float g_translation_speed = 0.05;
+const float g_rotation_speed = M_PI/180*0.2;
+
+int g_viewport_width = 0;
+int g_viewport_height = 0;
+
+void Keyboard(unsigned char key, int x, int y);
+void KeyboardUp(unsigned char key, int x, int y);
+void specialkeypressed(int key, int x, int y);
+void specialkeyUp(int key, int x, int y);
+void MouseMotion(int x, int y);
+void Mouse(int button, int state, int x, int y);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Wall* merda;
 
 
 //--------------------------------- Definir cores
@@ -36,16 +98,12 @@ GLfloat   quadP[]= {4, 4, 0.1};
 GLint    defineView=0;
 GLint    defineProj=1;
 GLfloat  raio   = 20;
-GLfloat  angulo = 0.35*PI;
-GLfloat  obsP[] = {raio*(float)cos(angulo), 5.5, raio*(float)sin(angulo)};
-GLfloat  incy   = 0.5;
-GLfloat  inca   = 0.03;
 GLfloat  angBule = 0;
 GLfloat  incBule = 1;
 
 //------------------------------------------------------------ Texturas
 GLint    repete=1;
-GLfloat    rr=1;
+GLfloat  rr=1;
 GLint    maxR  =20;
 GLint    numQuadro =5;
 GLint    msec=10;					//.. definicao do timer (actualizacao)
@@ -58,265 +116,247 @@ GLuint  texture[2];
 GLuint  tex;
 RgbImage imag;
 
-//====================================================
-//KEYBOARD
-GLboolean keyStates[256]; // Create an array of boolean values of length 256 (0-255)
-GLboolean specialKeyStates[256]; //Create an array of boolean values
 
-void keyboard(){
 
-    if(keyStates['R']){
-        glutPostRedisplay();
-    }//--------------------------- Textura no azulejo
-    if(keyStates['T']){
-        glutPostRedisplay();
+
+
+void drawScene(){
+
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Mesa
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[0]);
+        glPushMatrix();
+                glTranslatef( mesaP[0], mesaP[1]+mesa/2, mesaP[2]);
+                glRotatef (       90, -1, 0, 0);
+                GLUquadricObj*  y = gluNewQuadric ( );
+                gluQuadricDrawStyle ( y, GLU_FILL   );
+                gluQuadricNormals   ( y, GLU_SMOOTH );
+                gluQuadricTexture   ( y, GL_TRUE    );
+                gluSphere ( y, 0.5*mesa, 150, 150);
+                gluDeleteQuadric ( y );
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[1]);
+        glPushMatrix();
+                glBegin(GL_QUADS);
+                        glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0 );
+                        glTexCoord2f(10.0f,0.0f); glVertex3i( xC, 0, 0 );
+                        glTexCoord2f(10.0f,10.0f); glVertex3i( xC, 0, xC);
+                        glTexCoord2f(0.0f,10.0f); glVertex3i( 0,  0,  xC);
+                glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+
+        merda->draw();
+
+
+        //*****************************************************
+        // A IMPLEMENTAR PELOS ALUNOS
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chaleira
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Quadro
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Parede z=0
+        //*****************************************************
+
+
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
+        glColor4f(BLACK);
+        glBegin(GL_LINES);
+                glVertex3i( 0, 0, 0);
+                glVertex3i(10, 0, 0);
+        glEnd();
+        glBegin(GL_LINES);
+                glVertex3i(0,  0, 0);
+                glVertex3i(0, 10, 0);
+        glEnd();
+        glBegin(GL_LINES);
+                glVertex3i( 0, 0, 0);
+                glVertex3i( 0, 0,10);
+        glEnd();
+
+
+}
+void criaDefineTexturas()
+{
+        //----------------------------------------- Mesa
+        glGenTextures(1, &texture[0]);
+        glBindTexture(GL_TEXTURE_2D, texture[0]);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        imag.LoadBmpFile("assets/mesa.bmp");
+        glTexImage2D(GL_TEXTURE_2D, 0, 3,
+        imag.GetNumCols(),
+                imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+                imag.ImageData());
+
+        //----------------------------------------- Chao y=0
+        glGenTextures(1, &texture[1]);
+        glBindTexture(GL_TEXTURE_2D, texture[1]);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        imag.LoadBmpFile("assets/chao.bmp");
+        glTexImage2D(GL_TEXTURE_2D, 0, 3,
+        imag.GetNumCols(),
+    imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+    imag.ImageData());
+
+        //*****************************************************
+        // A IMPLEMENTAR PELOS ALUNOS
+        //
+        //----------------------------------------- Chaleira
+        //----------------------------------------- Parede z=0
+        //----------------------------------------- Parede x=0
+        //----------------------------------------- Quadros
+        //*****************************************************
+}
+
+
+int main (int argc, char **argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitWindowSize(640, 480);
+    glutCreateWindow("FPS demo by Nghia Ho - Hit SPACEBAR to toggle FPS mode");
+
+    camera = new Camera();
+    merda = new Wall();
+    glClearColor(BLACK);
+    glShadeModel(GL_SMOOTH);
+    criaDefineTexturas( );
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_DEPTH_TEST);
+
+    glutIgnoreKeyRepeat(1);
+    glutDisplayFunc(Display);
+    glutIdleFunc(Display);
+    glutReshapeFunc(Reshape);
+    glutMouseFunc(Mouse);
+    glutMotionFunc(MouseMotion);
+    glutPassiveMotionFunc(MouseMotion);
+    glutKeyboardFunc(Keyboard);
+    glutKeyboardUpFunc(KeyboardUp);
+    glutSpecialFunc(specialkeypressed);
+    glutSpecialUpFunc(specialkeyUp);
+    glutIdleFunc(Idle);
+    glutTimerFunc(1, Timer, 0);
+    glutMainLoop();
+
+    return 0;
+}
+
+void Display (void) {
+    glClearColor (0.0,0.0,0.0,1.0); //clear the screen to black
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
+    glLoadIdentity();
+
+    camera->Refresh();
+
+    glColor3f(0,1,0);
+
+    //glutSolidTeapot(0.5);
+    //glutWireTeapot(0.5);
+    drawScene();
+
+    glutSwapBuffers(); //swap the buffers
+}
+
+void Reshape (int w, int h) {
+    g_viewport_width = w;
+    g_viewport_height = h;
+
+    glViewport (0, 0, (GLsizei)w, (GLsizei)h); //set the viewport to the current window specifications
+    glMatrixMode (GL_PROJECTION); //set the matrix to projection
+
+    glLoadIdentity ();
+    gluPerspective (60, (GLfloat)w / (GLfloat)h, 0.1 , 100.0); //set the perspective (angle of sight, width, height, ,depth)
+    glMatrixMode (GL_MODELVIEW); //set the matrix back to model
+}
+
+
+
+void Timer(int value)
+{
+    if(g_fps_mode) {
+        if(keyStates['w'] || keyStates['W'] || specialKeyStates[GLUT_KEY_UP]) {
+            camera->Move(g_translation_speed);
+        }
+        if(keyStates['s'] || keyStates['S'] || specialKeyStates[GLUT_KEY_DOWN]) {
+            camera->Move(-g_translation_speed);
+        }
+        if(keyStates['a'] || keyStates['A'] || specialKeyStates[GLUT_KEY_LEFT]) {
+            camera->Strafe(g_translation_speed);
+        }
+        if(keyStates['d'] || keyStates['D'] ||  specialKeyStates[GLUT_KEY_RIGHT]) {
+            camera->Strafe(-g_translation_speed);
+        }
+        if(g_mouse_left_down) {
+            camera->Fly(-g_translation_speed);
+        }
+        else if(g_mouse_right_down) {
+            camera->Fly(g_translation_speed);
+        }
     }
-    if(keyStates['Q']){
-        defineProj=(defineProj+1)%2;
-        glutPostRedisplay();
-    }
-    if(keyStates[27]){
+
+    glutTimerFunc(1, Timer, 0);
+}
+
+void Idle()
+{
+    Display();
+}
+
+//========================================================
+//Input
+
+void Keyboard(unsigned char key, int x, int y)
+{
+    if(key == 27) {
         exit(0);
     }
+
+    if(key == ' ') {
+        g_fps_mode = !g_fps_mode;
+
+        if(g_fps_mode) {
+            glutSetCursor(GLUT_CURSOR_NONE);
+            glutWarpPointer(g_viewport_width/2, g_viewport_height/2);
+        }
+        else {
+            glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+        }
+    }
+
+    if(glutGetModifiers() == GLUT_ACTIVE_SHIFT) {
+        g_shift_down = true;
+    }
+    else {
+        g_shift_down = false;
+    }
+
+    keyStates[key] = true;
 }
 
-void teclasNotAscii(){
-    if(specialKeyStates[GLUT_KEY_UP])
-        obsP[1]=obsP[1]+incy;
-    if(specialKeyStates[GLUT_KEY_DOWN])
-        obsP[1]=obsP[1]-incy;
-    if(specialKeyStates[GLUT_KEY_LEFT])
-        angulo=angulo+inca;
-    if(specialKeyStates[GLUT_KEY_RIGHT])
-        angulo=angulo-inca;
-
-    if (obsP[1]> yC)
-        obsP[1]= yC;
-    if (obsP[1]<-yC)
-        obsP[1]=-yC;
-    obsP[0] = raio*cos(angulo);
-    obsP[2] = raio*sin(angulo);
-
-    glutPostRedisplay();
-}
-
-void keypressed(unsigned char key, int x, int y)
+void KeyboardUp(unsigned char key, int x, int y)
 {
-    keyStates[key] = 1; // Set the state of the current key to pressed
-    keyboard();
+    keyStates[key] = false;
 }
 
-void keyUp(unsigned char key, int x, int y)
-{
-    keyStates[key] = 0; // Set the state of the current key to pressed
-}
 void specialkeypressed(int key, int x, int y)
 {
     specialKeyStates[key] = 1; // Set the state of the current key to pressed
-    teclasNotAscii();
 }
 void specialkeyUp(int key, int x, int y)
 {
     specialKeyStates[key] = 0; // Set the state of the current key to pressed
 }
 
-
-Wall merda;
-Camera g_camera;
-bool g_key[256];
-bool g_shift_down = false;
-bool g_fps_mode = true;
-int g_viewport_width = 0;
-int g_viewport_height = 0;
-bool g_mouse_left_down = false;
-bool g_mouse_right_down = false;
-
-// Movement settings
-const float g_translation_speed = 0.05;
-const float g_rotation_speed = M_PI/180*0.2;
-//=====================================================================
-
-void criaDefineTexturas()
-{   
-	//----------------------------------------- Mesa
-	glGenTextures(1, &texture[0]);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	imag.LoadBmpFile("assets/mesa.bmp");
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, 
-	imag.GetNumCols(),
-		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-		imag.ImageData());
-
-	//----------------------------------------- Chao y=0
-	glGenTextures(1, &texture[1]);
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	imag.LoadBmpFile("assets/chao.bmp");
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, 
-	imag.GetNumCols(),
-    imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-    imag.ImageData());
-
-	//*****************************************************
-	// A IMPLEMENTAR PELOS ALUNOS
-	//
-	//----------------------------------------- Chaleira
-	//----------------------------------------- Parede z=0
-	//----------------------------------------- Parede x=0
-	//----------------------------------------- Quadros
-	//*****************************************************
-}
-
-
-void init(void)
-{
-	glClearColor(BLACK);
-	glShadeModel(GL_SMOOTH);
-	criaDefineTexturas( );
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_DEPTH_TEST);
-}
-
-
-void resizeWindow(GLsizei w, GLsizei h)
-{
- 	wScreen=w;
-	hScreen=h;
-	//glViewport( 0, 0, wScreen,hScreen );	
-	//glutReshapeWindow(wScreen,hScreen);
-	glutPostRedisplay();
-}
-
-
-void drawScene(){
-	
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Mesa
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,texture[0]);
-	glPushMatrix();		
-		glTranslatef( mesaP[0], mesaP[1]+mesa/2, mesaP[2]);
-		glRotatef (       90, -1, 0, 0);
-		GLUquadricObj*  y = gluNewQuadric ( );
-		gluQuadricDrawStyle ( y, GLU_FILL   );
-		gluQuadricNormals   ( y, GLU_SMOOTH );
-		gluQuadricTexture   ( y, GL_TRUE    );
-		gluSphere ( y, 0.5*mesa, 150, 150);
-		gluDeleteQuadric ( y );
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,texture[1]);
-	glPushMatrix();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0 ); 
-			glTexCoord2f(10.0f,0.0f); glVertex3i( xC, 0, 0 ); 
-			glTexCoord2f(10.0f,10.0f); glVertex3i( xC, 0, xC); 
-			glTexCoord2f(0.0f,10.0f); glVertex3i( 0,  0,  xC); 
-		glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-
-    merda.draw();
-
-
-	//*****************************************************
-	// A IMPLEMENTAR PELOS ALUNOS
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chaleira
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Quadro
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Parede z=0
-	//*****************************************************
-	
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
-	glColor4f(BLACK);
-	glBegin(GL_LINES);
-		glVertex3i( 0, 0, 0); 
-		glVertex3i(10, 0, 0); 
-	glEnd();
-	glBegin(GL_LINES);
-		glVertex3i(0,  0, 0); 
-		glVertex3i(0, 10, 0); 
-	glEnd();
-	glBegin(GL_LINES);
-		glVertex3i( 0, 0, 0); 
-		glVertex3i( 0, 0,10); 
-	glEnd();
-
-
-}
-
-void display(void){
-    teclasNotAscii();
-    keyboard();
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Apagar ]
-    glClearColor (0.0,0.0,0.0,1.0); //clear the screen to black
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
-    glLoadIdentity();
-
-    if(g_fps_mode) {
-        glutSetCursor(GLUT_CURSOR_NONE);
-        glutWarpPointer(g_viewport_width/2, g_viewport_height/2);
-    }
-    else {
-        glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
-    }
-
-    g_camera.Refresh();
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
-    drawScene();
-	
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Actualizacao
-	glutSwapBuffers();
-}
-
-
-void Timer(int value) 
-{
-	angBule=angBule+incBule;
-	glutPostRedisplay();
-	glutTimerFunc(msec,Timer, 1);
-}
-
-//======================================================= EVENTOS
-void MouseMotion(int x, int y)
-{
-    // This variable is hack to stop glutWarpPointer from triggering an event callback to Mouse(...)
-    // This avoids it being called recursively and hanging up the event loop
-    static bool just_warped = false;
-
-    if(just_warped) {
-        just_warped = false;
-        return;
-    }
-
-    if(g_fps_mode) {
-        int dx = x - g_viewport_width/2;
-        int dy = y - g_viewport_height/2;
-
-        if(dx) {
-            g_camera.RotateYaw(g_rotation_speed*dx);
-        }
-
-        if(dy) {
-            g_camera.RotatePitch(g_rotation_speed*dy);
-        }
-
-        glutWarpPointer(g_viewport_width/2, g_viewport_height/2);
-
-        just_warped = true;
-    }
-}
 void Mouse(int button, int state, int x, int y)
 {
     if(state == GLUT_DOWN) {
@@ -337,47 +377,33 @@ void Mouse(int button, int state, int x, int y)
     }
 }
 
-void Reshape (int w, int h) {
-    g_viewport_width = w;
-    g_viewport_height = h;
+void MouseMotion(int x, int y)
+{
+    // This variable is hack to stop glutWarpPointer from triggering an event callback to Mouse(...)
+    // This avoids it being called recursively and hanging up the event loop
+    static bool just_warped = false;
 
-    glViewport (0, 0, (GLsizei)w, (GLsizei)h); //set the viewport to the current window specifications
-    glMatrixMode (GL_PROJECTION); //set the matrix to projection
+    if(just_warped) {
+        just_warped = false;
+        return;
+    }
 
-    glLoadIdentity ();
-    gluPerspective (60, (GLfloat)w / (GLfloat)h, 0.1 , 100.0); //set the perspective (angle of sight, width, height, ,depth)
-    glMatrixMode (GL_MODELVIEW); //set the matrix back to model
+    if(g_fps_mode) {
+        int dx = x - g_viewport_width/2;
+        int dy = y - g_viewport_height/2;
+
+        if(dx) {
+            camera->RotateYaw(g_rotation_speed*dx);
+        }
+
+        if(dy) {
+            camera->RotatePitch(g_rotation_speed*dy);
+        }
+        //glutSetCursor(GLUT_CURSOR_FULL_CROSSHAIR);
+        glutWarpPointer(g_viewport_width/2, g_viewport_height/2);
+
+        just_warped = true;
+    }
 }
 
 
-//======================================================= MAIN
-int main(int argc, char** argv){
-
-	glutInit(&argc, argv);
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
-	glutInitWindowSize (wScreen, hScreen); 
-	glutInitWindowPosition (100, 100); 
-	glutCreateWindow ("{jh,pjmm}@dei.uc.pt-CG ::::::::::::::: (left,right,up,down, 'q', 'r', 't)' ");
-        glutReshapeFunc(Reshape);
-  
-	init();
-
-    //add keyboard listeners
-    glutKeyboardFunc(keypressed);
-    glutKeyboardUpFunc(keyUp);
-    glutSpecialFunc(specialkeypressed);
-    glutSpecialUpFunc(specialkeyUp);
-
-    //mouse
-    glutMouseFunc(Mouse);
-    glutMotionFunc(MouseMotion);
-    glutPassiveMotionFunc(MouseMotion);
-    //rt
-	glutDisplayFunc(display); 
-	glutReshapeFunc(resizeWindow);
-	glutTimerFunc(msec, Timer, 1);
-    merda = Wall();
-	glutMainLoop();
-
-	return 0;
-}

@@ -11,10 +11,11 @@ extern GLuint texture[2];
 Wall::Wall(){
     //fazer cenas, dá jeito!
     cenas = 5;
-    printf("\nCenas= %d\n",cenas);
+    //printf("\nCenas= %d\n",cenas);
 }
 void Wall::draw(){
-    printf("merda\n\n");
+    //printf("merda\n\n");
+
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texture[1]);
     glPushMatrix();
@@ -26,7 +27,7 @@ void Wall::draw(){
         glEnd();
     glPopMatrix();
     glDisable(GL_TEXTURE_2D);
-    printf("acabou a merda\n");
+    //printf("acabou a merda\n");
 
 
 }
