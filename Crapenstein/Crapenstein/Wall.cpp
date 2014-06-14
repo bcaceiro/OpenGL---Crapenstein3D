@@ -6,29 +6,61 @@
 #include "Wall.h"
 #include "OpenGLIncludes.h"
 
-extern GLuint texture[2];
+extern GLuint texture[4];
 //constructor
-Wall::Wall(){
+Wall::Wall(float x,float y,float z,float width,float height,int orientation){
     //fazer cenas, dá jeito!
-    cenas = 5;
     //printf("\nCenas= %d\n",cenas);
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->width = width;
+    this->height = height;
+    this->orientation = orientation;
 }
 void Wall::draw(){
     //printf("merda\n\n");
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texture[1]);
-    glPushMatrix();
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f,0.0f);   glVertex3i( 0,  0,  0);
-            glTexCoord2f(10.0f,0.0f);  glVertex3i( 15, 0,  0);
-            glTexCoord2f(10.0f,10.0f); glVertex3i( 15, 15, 0);
-            glTexCoord2f(0.0f,10.0f);  glVertex3i( 0,  15, 0);
-        glEnd();
-    glPopMatrix();
-    glDisable(GL_TEXTURE_2D);
+    if(orientation==0){
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[1]);
+        glPushMatrix();
+            glBegin(GL_QUADS);
+                    glTexCoord2f(0.0f,0.0f);   glVertex3i( x,        y,  z       );
+                    glTexCoord2f(10.0f,0.0f);  glVertex3i( x+width,  y,  z       );
+                    glTexCoord2f(10.0f,10.0f); glVertex3i( x+width,  y,  z+height);
+                    glTexCoord2f(0.0f,10.0f);  glVertex3i( x,        y,  z+height);
+            glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+    }
+    else if(orientation==1){
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[2]);
+        glPushMatrix();
+            glBegin(GL_QUADS);
+                    glTexCoord2f(0.0f,0.0f);   glVertex3i( x,        y,         z);
+                    glTexCoord2f(10.0f,0.0f);  glVertex3i( x+width,  y,         z);
+                    glTexCoord2f(10.0f,10.0f); glVertex3i( x+width,  y+height,  z);
+                    glTexCoord2f(0.0f,10.0f);  glVertex3i( x,        y+height,  z);
+            glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
     //printf("acabou a merda\n");
-
+    }
+    else if(orientation==2){
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[3]);
+        glPushMatrix();
+            glBegin(GL_QUADS);
+                    glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z);
+                    glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width);
+                    glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width);
+                    glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z);
+            glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+    //printf("acabou a merda\n");
+    }
 
 }
 
