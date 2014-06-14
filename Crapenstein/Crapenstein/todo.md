@@ -1,9 +1,11 @@
 # To do (Caceiro)
-- [ ] Make a super cute robot
-- [ ] Cenas
+- [ ] Super cute robot
+- [ ] Enemy
+- [ ] 
 
 
 ## To do (Cardouzo)
 - [ ] Map
-- [ ] Cenas
+- [ ] Collisions
+
 
