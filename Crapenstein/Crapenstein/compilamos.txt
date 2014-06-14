@@ -1,0 +1,1 @@
+g++ *.cpp -I/usr/local/include -I/opt/X11/include -L/usr/local/lib -I/opt/X11/lib -w -framework OpenGL -lGLUT -g -o cena
