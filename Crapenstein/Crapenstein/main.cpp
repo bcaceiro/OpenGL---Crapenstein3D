@@ -14,6 +14,7 @@
 #include "Wall.h"
 #include "Robot.h"
 #include "RgbImage.h"
+#include "mapLimits.h"
 
 
 
@@ -35,14 +36,14 @@ void Idle();
 
 Camera* camera;
 
-bool keyStates[256];
-bool specialKeyStates[25];
+bool keyStates[256] = {false};
+bool specialKeyStates[256] = {false};
 bool g_mouse_left_down = false;
 bool g_mouse_right_down = false;
 bool g_shift_down = false;
 bool g_fps_mode = false;
 // Movement settings
-const float g_translation_speed = 0.05;
+const float g_translation_speed = 0.5;
 const float g_rotation_speed = M_PI/180*0.2;
 
 int g_viewport_width = 0;
@@ -65,6 +66,15 @@ Robot* robotFofinho;
 
 
 //--------------------------------- Definir cores
+#define BLUE     0.0, 0.0, 1.0, 1.0
+#define RED      1.0, 0.0, 0.0, 1.0
+#define YELLOW  1.0, 1.0, 0.0, 1.0
+#define GREEN    0.0, 1.0, 0.0, 1.0
+#define ORANGE   1.0, 0.5, 0.1, 1.0
+#define WHITE    1.0, 1.0, 1.0, 1.0
+#define BLACK    0.0, 0.0, 0.0, 1.0
+#define GRAY     0.9, 0.92, 0.29, 1.0
+#define PI		 3.14159
 
 
 //================================================================================
@@ -99,7 +109,7 @@ GLint    msec=10;					//.. definicao do timer (actualizacao)
 //=========================================================================== INIT
 
 //------------------------------------------------------------ Texturas
-GLuint  texture[2];
+GLuint  texture[4];
 GLuint  tex;
 RgbImage imag;
 
@@ -133,8 +143,7 @@ void drawScene(){
         glDisable(GL_TEXTURE_2D);
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
-    
-        glEnable(GL_TEXTURE_2D);
+        /*glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[1]);
         glPushMatrix();
                 glBegin(GL_QUADS);
@@ -144,10 +153,13 @@ void drawScene(){
                         glTexCoord2f(0.0f,10.0f); glVertex3i( 0,  0,  xC);
                 glEnd();
         glPopMatrix();
-        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_2D);*/
 
-        merda->draw();
-        robotFofinho->drawRobot();
+        parede1->draw();
+        parede2->draw();
+        parede3->draw();
+        parede4->draw();
+        chao->draw();
 
         //*****************************************************
         // A IMPLEMENTAR PELOS ALUNOS
@@ -158,18 +170,20 @@ void drawScene(){
 
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
-        glColor4f(BLACK);
+        glColor4f(WHITE);
         glBegin(GL_LINES);
                 glVertex3i( 0, 0, 0);
-                glVertex3i(10, 0, 0);
+                glVertex3i(100, 0, 0);
         glEnd();
+        glColor4f(RED);
         glBegin(GL_LINES);
                 glVertex3i(0,  0, 0);
-                glVertex3i(0, 10, 0);
+                glVertex3i(0, 100, 0);
         glEnd();
+        glColor4f(BLUE);
         glBegin(GL_LINES);
                 glVertex3i( 0, 0, 0);
-                glVertex3i( 0, 0,10);
+                glVertex3i( 0, 0,100);
         glEnd();
 
 
@@ -209,8 +223,37 @@ void criaDefineTexturas()
         imag.LoadBmpFile("assets/chao.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
-    imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-    imag.ImageData());
+            imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+            imag.ImageData());
+
+        //----------------------------------------- Chao y=0
+        glGenTextures(1, &texture[2]);
+        glBindTexture(GL_TEXTURE_2D, texture[2]);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        imag.LoadBmpFile("assets/azulejo.bmp");
+        glTexImage2D(GL_TEXTURE_2D, 0, 3,
+        imag.GetNumCols(),
+            imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+            imag.ImageData());
+
+        //----------------------------------------- Chao y=0
+        glGenTextures(1, &texture[3]);
+        glBindTexture(GL_TEXTURE_2D, texture[3]);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        imag.LoadBmpFile("assets/parede.bmp");
+        glTexImage2D(GL_TEXTURE_2D, 0, 3,
+        imag.GetNumCols(),
+            imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+            imag.ImageData());
+
 
         //*****************************************************
         // A IMPLEMENTAR PELOS ALUNOS
@@ -226,10 +269,15 @@ void criaDefineTexturas()
 int main (int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(640, 480);
-    glutCreateWindow("FPS demo by Nghia Ho - Hit SPACEBAR to toggle FPS mode");
+    glutInitWindowSize(wScreen, hScreen);
+    glutCreateWindow("CGenstein");
 
     camera = new Camera();
+    parede1 = new Wall(0,  0,0, 100,15,1);
+    parede2 = new Wall(0,  0,0, 50,15,2);
+    parede3 = new Wall(0,  0,50,100,15,1);
+    parede4 = new Wall(100,0,0, 50,15,2);
+    chao = new Wall(0,0,0,100,50,0);
     merda = new Wall();
     robotFofinho = new Robot(8,5,3,1.3);
     glClearColor(BLACK);
@@ -289,16 +337,16 @@ void Reshape (int w, int h) {
 void Timer(int value)
 {
     if(g_fps_mode) {
-        if(keyStates['w'] || keyStates['W'] || specialKeyStates[GLUT_KEY_UP]) {
+        if(keyStates['w'] || specialKeyStates[GLUT_KEY_UP]) {
             camera->Move(g_translation_speed);
         }
-        if(keyStates['s'] || keyStates['S'] || specialKeyStates[GLUT_KEY_DOWN]) {
+        if(keyStates['s'] || specialKeyStates[GLUT_KEY_DOWN]) {
             camera->Move(-g_translation_speed);
         }
-        if(keyStates['a'] || keyStates['A'] || specialKeyStates[GLUT_KEY_LEFT]) {
+        if(keyStates['a'] || specialKeyStates[GLUT_KEY_LEFT]) {
             camera->Strafe(g_translation_speed);
         }
-        if(keyStates['d'] || keyStates['D'] ||  specialKeyStates[GLUT_KEY_RIGHT]) {
+        if(keyStates['d'] ||  specialKeyStates[GLUT_KEY_RIGHT]) {
             camera->Strafe(-g_translation_speed);
         }
         if(g_mouse_left_down) {
@@ -355,11 +403,11 @@ void KeyboardUp(unsigned char key, int x, int y)
 
 void specialkeypressed(int key, int x, int y)
 {
-    specialKeyStates[key] = 1; // Set the state of the current key to pressed
+    specialKeyStates[key] = true; // Set the state of the current key to pressed
 }
 void specialkeyUp(int key, int x, int y)
 {
-    specialKeyStates[key] = 0; // Set the state of the current key to pressed
+    specialKeyStates[key] = false; // Set the state of the current key to pressed
 }
 
 void Mouse(int button, int state, int x, int y)

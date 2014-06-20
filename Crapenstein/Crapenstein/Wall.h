@@ -9,14 +9,27 @@
 class Wall
 {
 public:
-    //constructor
-    Wall();
+    /**
+    * @brief Wall::Wall
+    * @param x
+    * @param y
+    * @param z
+    * @param width
+    * @param height
+    * @param orientation if 0 = horizontal, if 1, vertical, if 2, vertical side
+    */
+    Wall(float x,float y,float z,float width,float height,int orientation);
     //destroy
     ~Wall();
     void draw();
 
 private:
-    int cenas;
+    float x;
+    float y;
+    float z;
+    float width;
+    float height;
+    float orientation;
 };
 inline Wall::~Wall()
 {

@@ -2,14 +2,15 @@
 #include <cmath>
 #include "OpenGLIncludes.h"
 #include "Camera.h"
+#include "mapLimits.h"
 
 const float limit = 89.0 * M_PI / 180.0;
 
 void Camera::Init()
 {
-    m_yaw = 0;
-    m_pitch = -M_PI_2;
-    SetPos(8, 15, 15);
+    m_yaw = 0.0;
+    m_pitch = 0.0;
+    SetPos(15, 8, 15);
 }
 
 void Camera::Refresh()
@@ -22,6 +23,15 @@ void Camera::Refresh()
 
     m_strafe_lx = cos(m_yaw - M_PI_2);
     m_strafe_lz = sin(m_yaw - M_PI_2);
+
+    if(m_x<0.1)
+        m_x = 0.2;
+    if(m_x+0.1>MAP_WIDTH)
+        m_x = MAP_WIDTH-0.2;
+    if(m_z<0.1)
+        m_z = 0.2;
+    if(m_z+0.1>MAP_HEIGHT)
+        m_z = MAP_HEIGHT-0.2;
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -59,7 +69,8 @@ void Camera::Move(float incr)
     float lz = sin(m_yaw)*cos(m_pitch);
 
     m_x = m_x + incr*lx;
-    m_y = m_y + incr*ly;
+    //this line is comment because the player can't move the camera vertically?
+    //m_y = m_y + incr*ly;
     m_z = m_z + incr*lz;
 
     Refresh();
