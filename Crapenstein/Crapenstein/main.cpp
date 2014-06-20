@@ -1,11 +1,9 @@
 /*
-FPS control demo in GLUT by Nghia Ho
 
-SPACEBAR - toggle FPS control
-W,A,S,D - to move
-mouse - look around, inverted mouse
-left/right mouse - fly up/down
-ESC - quit
+ Crapenstein:
+ 
+    - Bruno Caceiro
+    - David Cardouzo
 
 */
 
@@ -14,7 +12,18 @@ ESC - quit
 #include <cmath>
 #include "Camera.h"
 #include "Wall.h"
+#include "Robot.h"
 #include "RgbImage.h"
+
+
+
+
+#define AZUL 0.0, 0.0, 1.0, 1.0
+#define VERMELHO 1.0, 0.0, 0.0, 1.0
+#define VERDE 0.0, 1.0, 0.0, 1.0
+#define BRANCO 1.0, 1.0, 1.0, 1.0
+#define BLACK 0.0, 0.0, 0.0, 1.0
+
 
 using namespace std;
 
@@ -45,40 +54,18 @@ void specialkeypressed(int key, int x, int y);
 void specialkeyUp(int key, int x, int y);
 void MouseMotion(int x, int y);
 void Mouse(int button, int state, int x, int y);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void desenhaRobot();
 
 
 
 
 
 Wall* merda;
+Robot* robotFofinho;
 
 
 //--------------------------------- Definir cores
-#define AZUL     0.0, 0.0, 1.0, 1.0
-#define VERMELHO 1.0, 0.0, 0.0, 1.0
-#define AMARELO  1.0, 1.0, 0.0, 1.0
-#define VERDE    0.0, 1.0, 0.0, 1.0
-#define LARANJA  1.0, 0.5, 0.1, 1.0
-#define WHITE    1.0, 1.0, 1.0, 1.0
-#define BLACK    0.0, 0.0, 0.0, 1.0
-#define GRAY     0.9, 0.92, 0.29, 1.0
-#define PI		 3.14159
+
 
 //================================================================================
 //===========================================================Variaveis e constantes
@@ -118,11 +105,17 @@ RgbImage imag;
 
 
 
+/* ROBOT */
+GLfloat robotX = 2;
+GLfloat robotZ = 2;
+GLfloat robotY = 2;
+
 
 
 void drawScene(){
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Mesa
+    
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[0]);
         glPushMatrix();
@@ -132,12 +125,15 @@ void drawScene(){
                 gluQuadricDrawStyle ( y, GLU_FILL   );
                 gluQuadricNormals   ( y, GLU_SMOOTH );
                 gluQuadricTexture   ( y, GL_TRUE    );
-                gluSphere ( y, 0.5*mesa, 150, 150);
+                glutSolidCube(1.5);
+                //gluSphere ( y, 0.5*mesa, 150, 150);
+
                 gluDeleteQuadric ( y );
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
+    
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[1]);
         glPushMatrix();
@@ -151,7 +147,7 @@ void drawScene(){
         glDisable(GL_TEXTURE_2D);
 
         merda->draw();
-
+        robotFofinho->drawRobot();
 
         //*****************************************************
         // A IMPLEMENTAR PELOS ALUNOS
@@ -178,6 +174,14 @@ void drawScene(){
 
 
 }
+
+
+
+
+
+
+
+
 void criaDefineTexturas()
 {
         //----------------------------------------- Mesa
@@ -227,6 +231,7 @@ int main (int argc, char **argv) {
 
     camera = new Camera();
     merda = new Wall();
+    robotFofinho = new Robot(8,5,3,1.3);
     glClearColor(BLACK);
     glShadeModel(GL_SMOOTH);
     criaDefineTexturas( );
@@ -405,5 +410,7 @@ void MouseMotion(int x, int y)
         just_warped = true;
     }
 }
+
+
 
 
