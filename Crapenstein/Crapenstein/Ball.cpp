@@ -48,7 +48,7 @@ void Ball::update() {
     glTranslated(x, y, z);
     glutSolidSphere(radius, 30, 30);
     glPopMatrix();
-
+    
 }
 
 #endif

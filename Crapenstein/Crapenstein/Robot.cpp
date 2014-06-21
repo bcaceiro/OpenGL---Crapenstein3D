@@ -32,6 +32,7 @@ void Robot::drawRobot() {
     
     //drawRobotHead(1.5,5,4.5,3);
     drawRobotHead(1.5,posX + torsoRadius,posY - 0.5,posZ);
+    laserPower(posX +0.5,posY - 0.1,posZ);
     //drawRobotEyes(0.3, 4.3,5,4,1.4);
     drawRobotEyes(0.3, posX + torsoRadius - 0.7,posY,posZ + 1,1.4);
     //drawRobotTorso(1.3, 7.0, 5,5,3);
@@ -108,6 +109,30 @@ void Robot:: drawRobotArms(GLfloat radius, GLfloat length, GLfloat armsDistance,
         quadratic3 = gluNewQuadric();
         gluCylinder(quadratic3,radius,radius,length,32,32);
     glPopMatrix();
+}
+
+void Robot::laserPower(GLfloat posX, GLfloat posY, GLfloat posZ) {
+    
+    //Eyes color = RED
+    glColor4f(1.0, 0.0, 0.0, 1.0);
+    
+    
+    glPushMatrix();
+    glTranslatef(posX,posY,posZ);
+    glRotatef(30,0.0,0.0,1.0);
+    GLUquadricObj *quadratic;
+    quadratic = gluNewQuadric();
+    gluCylinder(quadratic,0.1,0.1,8,32,32);
+    glPopMatrix();
+    
+    
+    glPushMatrix();
+    glTranslatef(posX + 1.5,posY,posZ);
+    GLUquadricObj *quadratic2;
+    quadratic2 = gluNewQuadric();
+    gluCylinder(quadratic2,0.1,0.1,8,32,32);
+    glPopMatrix();
+    
 }
 
 #endif
