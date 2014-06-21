@@ -30,8 +30,6 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
 
 void Robot::drawRobot() {
     
-
-    
     //drawRobotHead(1.5,5,4.5,3);
     drawRobotHead(1.5,posX + torsoRadius,posY - 0.5,posZ);
     //drawRobotEyes(0.3, 4.3,5,4,1.4);
