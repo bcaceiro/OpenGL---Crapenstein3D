@@ -16,11 +16,13 @@
 #include "Room.h"
 #include "Wall.h"
 #include "Robot.h"
+#include "DoorWall.h"
+#include "Map.h"
 #include "Ball.h"
 #include "RgbImage.h"
 #include "collidingObject.h"
 #include "torch.h"
-
+#include "Cube.h"
 using namespace std;
 
 vector<CollidingObject*> collidableObjects;
@@ -55,36 +57,22 @@ void specialkeyUp(int key, int x, int y);
 void MouseMotion(int x, int y);
 void Mouse(int button, int state, int x, int y);
 void desenhaRobot();
-
-
-/* Map
- 
- - Rooms (Numbered, 0 means there's no room
- 
- 0,9,0
- 6,7,8
- 0,5,0
- 2,3,4
- 0,1,0
- 
- */
+void createMap();
 
 
 
-Room* room1;
-Room* room2;
-Wall* floorRoom3;
+Map* map;
 
 
+DoorWall* testeDoor;
 
-Wall* merda;
 Robot* robotFofinho;
-Wall* parede1;
-Wall* parede2;
-Wall* parede3 ;
-Wall* parede4;
-Wall* parede5;
-Wall* chao;
+
+
+Cube* cuboTeste;
+Cube* cuboTeste2;
+Cube* cuboTeste3;
+
 Ball * bola1;
 Ball * bola2;
 //--------------------------------- Definir cores
@@ -136,21 +124,15 @@ GLfloat robotY = 2;
 
 void drawScene(){
 
-    room1->update();
-    room2->update();
-    floorRoom3->draw();
-    /*
-        parede1->draw();
-        parede2->draw();
-        parede3->draw();
-        parede4->draw();
-        parede5->draw();
-        chao->draw();
-     */
+    map->update();
+    testeDoor->draw();
         /* merdas robot */
         robotFofinho->drawRobot();
         bola1->update();
         bola2->update();
+    cuboTeste->draw();
+        cuboTeste2->draw();
+            cuboTeste3->draw();
         /*LUZESSSS*/
         GLfloat lightPos[4] = {5, 5,5, 1.0};
         glLightfv(GL_LIGHT1,GL_POSITION, lightPos);
@@ -243,31 +225,18 @@ void criaDefineTexturas()
 void initializeObjects() {
     
     camera = new Camera();
-    /*
-    parede1 = new Wall(0,  0,0, 100,15,1);
-    parede2 = new Wall(0,  0,0, 50,15,2);
-    parede3 = new Wall(0,  0,50,100,15,1);
-    parede4 = new Wall(100,0,0, 50,15,2);
-     */
     
-    //Room(GLfloat roomPosX, GLfloat roomPosY, GLfloat roomPosZ, GLfloat leftWallWidth, GLfloat roomHeight, GLfloat backWallWidth, bool isLeftWallActive, bool isBackWallActive, bool isRightWallActive, bool isFrontWallActive);
+    map = new Map();
+    testeDoor = new DoorWall(100,0,0,50,15,2);
 
-    
-    room1 = new Room(0,0,0,100,15,50,true,true,true,false);
-    room1->buildRoom();
-    
-    room2 = new Room(100,0,-50,100,15,50,true,true,false,true);
-    room2->buildRoom();
-    
-    floorRoom3 = new Wall (100,0,0,100,50,0);
-    
-    
-    
-
-    chao = new Wall(0,0,0,100,50,0);
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
     robotFofinho = new Robot(8,5,3,1.3,camera);
+    
+    cuboTeste = new Cube(30,2,25,2,0.25, 1.0f,0.0f,0.0f);
+    cuboTeste2 = new Cube(40,2,25,2,0.25, 0.0f,1.0f,0.0f);
+    cuboTeste3 = new Cube(50,2,25,2,0.25, 0.0f,0.0f,1.0f);
+
 
     //set Robot Bounds FIXME move inside the robot class
     robotFofinho->setBounds(8,5,3,1.3,1.3,5);
@@ -426,6 +395,13 @@ void Timer(int value)
             robotFofinho->Strafe(-g_translation_speed);
         }
         
+        
+        
+        if(keyStates['p']) {
+            testeDoor->openDoor();
+        }
+        
+
         if(g_mouse_left_down) {
             camera->Fly(-g_translation_speed);
         }
@@ -450,6 +426,7 @@ void Keyboard(unsigned char key, int x, int y)
     if(key == 27) {
         exit(0);
     }
+    
     if(key == ' ') {
         g_fps_mode = !g_fps_mode;
 
