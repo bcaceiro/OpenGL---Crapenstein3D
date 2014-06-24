@@ -412,20 +412,18 @@ void Timer(int value)
 {
     if(g_fps_mode) {
         if(keyStates['w'] || specialKeyStates[GLUT_KEY_UP]) {
-            robotFofinho->moveFront();
+            robotFofinho->Move(g_translation_speed);
 
         }
         if(keyStates['s'] || specialKeyStates[GLUT_KEY_DOWN]) {
-            robotFofinho->moveBack();
-
+            robotFofinho->Move(-g_translation_speed);
         }
         if(keyStates['a'] || specialKeyStates[GLUT_KEY_LEFT]) {
-            robotFofinho->moveLeft();
+            robotFofinho->Strafe(g_translation_speed);
 
         }
         if(keyStates['d'] ||  specialKeyStates[GLUT_KEY_RIGHT]) {
-            robotFofinho->moveRight();
-
+            robotFofinho->Strafe(-g_translation_speed);
         }
         
         if(g_mouse_left_down) {
@@ -490,7 +488,7 @@ void specialkeyUp(int key, int x, int y)
 
 void Mouse(int button, int state, int x, int y)
 {
-    if(state == GLUT_DOWN) {
+    /*if(state == GLUT_DOWN) {
         if(button == GLUT_LEFT_BUTTON) {
             g_mouse_left_down = true;
         }
@@ -505,7 +503,7 @@ void Mouse(int button, int state, int x, int y)
         else if(button == GLUT_RIGHT_BUTTON) {
             g_mouse_right_down = false;
         }
-    }
+    }*/
 }
 
 void MouseMotion(int x, int y)

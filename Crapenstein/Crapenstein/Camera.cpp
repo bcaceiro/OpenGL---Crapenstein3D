@@ -2,6 +2,7 @@
 #include <cmath>
 #include "OpenGLIncludes.h"
 #include "Camera.h"
+#include "Robot.h"
 #include "collidingObject.h"
 
 const float limit = 89.0 * M_PI / 180.0;
@@ -13,7 +14,7 @@ void Camera::Init()
 {
     m_yaw = 0.0;
     m_pitch = 0.0;
-    SetPos(15, 8, 15);
+    SetPos(14, 8, 14);
 }
 
 void Camera::Refresh()
@@ -75,8 +76,10 @@ void Camera::GetDirectionVector(float &x, float &y, float &z)
 void Camera::Move(float incr)
 {
     float lx = cos(m_yaw)*cos(m_pitch);
+    //float lx = cos(m_yaw);
     float ly = sin(m_pitch);
     float lz = sin(m_yaw)*cos(m_pitch);
+    //float lz = sin(m_yaw);
 
     m_x = m_x + incr*lx;
     //this line is comment because the player can't move the camera vertically?
@@ -103,7 +106,7 @@ void Camera::Fly(float incr)
 void Camera::RotateYaw(float angle)
 {
     m_yaw += angle;
-
+    ((Robot*)(this->obj))->RotateYaw(angle);
     Refresh();
 }
 
@@ -116,7 +119,7 @@ void Camera::RotatePitch(float angle)
 
     if(m_pitch > limit)
         m_pitch = limit;
-
+    ((Robot*)(this->obj))->RotatePitch(angle);
     Refresh();
 }
 
