@@ -203,7 +203,7 @@ void drawScene(){
      */
         /* merdas robot */
         robotFofinho->drawRobot();
-    bola1->update();
+        bola1->update();
         bola2->update();
         /*LUZESSSS*/
         GLfloat lightPos[4] = {5, 5,5, 1.0};
@@ -364,11 +364,11 @@ int main (int argc, char **argv) {
     initializeObjects();
 
     Torch* huehuehue = new Torch();
-    collidableObjects.push_back(parede1);
+    /*collidableObjects.push_back(parede1);
     collidableObjects.push_back(parede2);
     collidableObjects.push_back(parede3);
     collidableObjects.push_back(parede4);
-    collidableObjects.push_back(chao);
+    collidableObjects.push_back(chao);*/
 
         /* LIGHTS */
     glEnable(GL_LIGHTING);
