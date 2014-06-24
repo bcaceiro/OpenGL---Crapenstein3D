@@ -48,8 +48,8 @@ void Wall::draw(){
         glPushMatrix();
             glBegin(GL_QUADS);
                     glTexCoord2f(0.0f,0.0f);   glVertex3i( x,        y,         z);
-                    glTexCoord2f(1.0f,0.0f);  glVertex3i( x+width,  y,         z);
-                    glTexCoord2f(1.0f,1.0f); glVertex3i( x+width,  y+height,  z);
+                    glTexCoord2f(10.0f,0.0f);  glVertex3i( x+width,  y,         z);
+                    glTexCoord2f(10.0f,1.0f); glVertex3i( x+width,  y+height,  z);
                     glTexCoord2f(0.0f,1.0f);  glVertex3i( x,        y+height,  z);
             glEnd();
         glPopMatrix();
@@ -119,19 +119,20 @@ bool Wall::isColliding(CollidingObject* obj){
         m_z = 0.2;
     if(m_z+0.1>MAP_HEIGHT)
         m_z = MAP_HEIGHT-0.2;*/
-
-    printf("Wall:(%f,%f,%f,%f,%f,%f)\n",
-    this->collide_minX,this->collide_maxX,this->collide_minY,this->collide_maxY,this->collide_minZ,this->collide_maxZ);
-    printf("OBJ:(%f,%f,%f,%f,%f,%f)\n",
-    obj->collide_minX,obj->collide_maxX,obj->collide_minY,obj->collide_maxY,obj->collide_minZ,obj->collide_maxZ);
-
-
-    if(this->collide_minX < obj->collide_maxX && this->collide_maxX > obj->collide_minX)
-        if(this->collide_minY < obj->collide_maxY && this->collide_maxY > obj->collide_minY)
+    if(this->orientation!=0)
+        printf("CollisionTestX(%f,%f,%f,%f)\n",this->collide_minX,obj->collide_maxX,this->collide_maxX,obj->collide_minX);
+    if(this->collide_minX < obj->collide_maxX && this->collide_maxX > obj->collide_minX){
+        if(this->orientation!=0)
+            printf("CollisionTestY((%f,%f,%f,%f)\n",this->collide_minY,obj->collide_maxY,this->collide_maxY,obj->collide_minY);
+        if(this->collide_minY < obj->collide_maxY && this->collide_maxY > obj->collide_minY){
+            if(this->orientation!=0)
+                printf("CollisionTestZ((%f,%f,%f,%f)\n",this->collide_minZ,obj->collide_maxZ,this->collide_maxZ,obj->collide_minZ);
             if(this->collide_minZ < obj->collide_maxZ && this->collide_maxZ > obj->collide_minZ){
                 printf("Colliding(%d)...\n",orientation);
                 return true;
             }
+        }
+    }
     printf("Not Colliding...\n");
     return false;
 }

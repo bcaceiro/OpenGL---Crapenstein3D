@@ -12,6 +12,10 @@
 #include <assert.h>
 #include "OpenGLIncludes.h"
 #include "Camera.h"
+#include <vector>
+
+using namespace std;
+extern vector<CollidingObject*> collidableObjects;
 
 class Robot : public CollidingObject
 {

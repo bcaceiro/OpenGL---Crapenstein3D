@@ -11,6 +11,7 @@
 #define __ROBOT__
 
 #include <stdio.h>
+#include <cmath>
 #include "Robot.h"
 #include "Camera.h"
 #include "OpenGLIncludes.h"
@@ -26,6 +27,12 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
     posZ = robotPosZ;
     torsoRadius = RobotTorsoRadius;
     cam = globalCamera;
+    //set the camera position
+    cam->SetPos(robotPosX,robotPosY+2,robotPosZ);
+    //esta é precisa, para por o robot e a camera a apontar para o mesmo sitio
+    cam->SetYaw(M_PI_2);
+    //esta é só para se ver logo o robot
+    cam->SetPitch(-0.5);
 }
 
 
@@ -141,22 +148,62 @@ void Robot::laserPower(GLfloat posX, GLfloat posY, GLfloat posZ) {
 
 void Robot::moveLeft() {
     posX+=0.5;
+    this->setBounds(posX,posY,posZ,1.3,1.3,5);
+    unsigned int vector_size = collidableObjects.size();
+    for(unsigned int i = 0; i < vector_size; ++i){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(this)){
+            posX-=0.5;
+            this->setBounds(posX,posY,posZ,1.3,1.3,5);
+            return;
+        }
+    }
     cam->Strafe(0.5);
+    this->setBounds(posX,posY,posZ,1.3,1.3,5);
 }
 
 void Robot::moveRight() {
     posX -= 0.5;
+    this->setBounds(posX,posY,posZ,1.3,1.3,5);
+    unsigned int vector_size = collidableObjects.size();
+    for(unsigned int i = 0; i < vector_size; ++i){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(this)){
+            posX+=0.5;
+            this->setBounds(posX,posY,posZ,1.3,1.3,5);
+            return;
+        }
+    }
     cam->Strafe(-0.5);
+    this->setBounds(posX,posY,posZ,1.3,1.3,5);
 }
 
 void Robot::moveFront() {
     posZ += 0.5;
+    this->setBounds(posX,posY,posZ,1.3,1.3,5);
+    unsigned int vector_size = collidableObjects.size();
+    for(unsigned int i = 0; i < vector_size; ++i){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(this)){
+            this->setBounds(posX,posY,posZ,1.3,1.3,5);
+            posZ-=0.5;
+            return;
+        }
+    }
     cam->Move(0.5);
+    this->setBounds(posX,posY,posZ,1.3,1.3,5);
 }
 
 void Robot::moveBack() {
     posZ -= 0.5;
+    this->setBounds(posX,posY,posZ,1.3,1.3,5);
+    unsigned int vector_size = collidableObjects.size();
+    for(unsigned int i = 0; i < vector_size; ++i){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(this)){
+            this->setBounds(posX,posY,posZ,1.3,1.3,5);
+            posZ+=0.5;
+            return;
+        }
+    }
     cam->Move(-0.5);
+    this->setBounds(posX,posY,posZ,1.3,1.3,5);
 }
 
 
