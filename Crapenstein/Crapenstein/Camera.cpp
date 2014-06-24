@@ -87,14 +87,14 @@ void Camera::Move(float incr)
     //m_y = m_y + incr*ly;
     unsigned int vector_size = collidableObjects.size();
     for(unsigned int i = 0; i < vector_size; ++i){
-        if(((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z)==true){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(this->obj)){
             m_x = m_x - incr*lx;
             break;
         }
     }
     m_z = m_z + incr*lz;
     for(unsigned int i = 0; i < vector_size; ++i){
-        if(((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z)){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(this->obj)){
             m_z = m_z - incr*lx;
             break;
         }
@@ -107,14 +107,14 @@ void Camera::Strafe(float incr)
     m_x = m_x + incr*m_strafe_lx;
     unsigned int vector_size = collidableObjects.size();
     for(unsigned int i = 0; i < vector_size; ++i){
-        if(((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z)){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(this->obj)){
             m_x = m_x - incr*m_strafe_lx;
             break;
         }
     }
     m_z = m_z + incr*m_strafe_lz;
     for(unsigned int i = 0; i < vector_size; ++i){
-        if(((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z)){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(this->obj)){
              m_z = m_z - incr*m_strafe_lz;
             break;
         }
@@ -162,4 +162,8 @@ void Camera::SetPitch(float angle)
     m_pitch = angle;
 
     Refresh();
+}
+
+void Camera::setObject(CollidingObject *obj){
+    this->obj = obj;
 }

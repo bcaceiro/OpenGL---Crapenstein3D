@@ -31,7 +31,7 @@ private:
     float z;
     float width;
     float height;
-    float orientation;
+    int orientation;
 };
 inline Wall::~Wall()
 {

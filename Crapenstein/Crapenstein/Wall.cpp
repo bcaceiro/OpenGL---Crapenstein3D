@@ -122,8 +122,10 @@ bool Wall::isColliding(CollidingObject* obj){
 
     if(this->collide_minX < obj->collide_maxX && this->collide_maxX > obj->collide_minX)
         if(this->collide_minY < obj->collide_maxY && this->collide_maxY > obj->collide_minY)
-            if(this->collide_minZ < obj->collide_maxZ && this->collide_maxZ > obj->collide_minZ)
+            if(this->collide_minZ < obj->collide_maxZ && this->collide_maxZ > obj->collide_minZ){
+                printf("Colliding(%d)...\n",orientation);
                 return true;
+            }
     return false;
 }
 

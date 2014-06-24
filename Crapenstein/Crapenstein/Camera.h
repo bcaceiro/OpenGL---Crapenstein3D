@@ -1,6 +1,6 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
-
+#include "collidingObject.h"
 /*
 Generic camera class by Nghia Ho
 */
@@ -25,9 +25,10 @@ public:
 	void Fly(float incr);
 	void RotateYaw(float angle);
 	void RotatePitch(float angle);
+    void setObject(CollidingObject* obj);
 
 private:
-
+    CollidingObject* obj;
 	float m_x, m_y, m_z;   // Position
     float m_lx, m_ly, m_lz; // Direction vector of where we are looking at
 	float m_yaw, m_pitch; // Various rotation angles
