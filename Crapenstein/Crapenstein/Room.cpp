@@ -19,8 +19,6 @@ Room::Room(GLfloat roomPosX, GLfloat roomPosY, GLfloat roomPosZ, GLfloat leftWal
     leftWidth     = leftWallWidth;
     height        = roomHeight;
     backWidth     = backWallWidth;
-    /* 1- LeftDoor; 2- BackDoor 3- RightDoor; 4 - FrontDoor;*/
-    
     
     leftWallActive  = isLeftWallActive;
     backWallActive  = isBackWallActive;
@@ -30,20 +28,6 @@ Room::Room(GLfloat roomPosX, GLfloat roomPosY, GLfloat roomPosZ, GLfloat leftWal
 
 }
 
-
-/*
- x= 0; y = 0; z = 0; leftWallWidth = 100; roomHeight = 15;
- room1LeftWall  = new Wall(0,0,0,100,15,1);
- room1RightWall = new Wall(0,0,50,100,15,1);
- room1BackWall  = new Wall(0,0,0,50,15,2);
- 
- parede1 = new Wall(0,  0,0, 100,15,1);
- parede2 = new Wall(0,  0,0, 50,15,2);
- parede3 = new Wall(0,  0,50,100,15,1);
- parede4 = new Wall(100,0,0, 50,15,2);
-         chao = new Wall(0,0,0,100,50,0);
- 
- */
 
 void Room::buildRoom() {
     
@@ -65,8 +49,6 @@ void Room::buildRoom() {
     
 
 
-
-
 void Room::update() {
     
     if(leftWallActive)
@@ -83,5 +65,4 @@ void Room::update() {
     
     floor->draw();
     
-
 }

@@ -15,12 +15,12 @@
 #include "Room.h"
 #include "Wall.h"
 #include "Robot.h"
+#include "Map.h"
 #include "Ball.h"
 #include "RgbImage.h"
 #include "mapLimits.h"
 #include "collidingObject.h"
 #include "torch.h"
-
 
 
 
@@ -67,42 +67,11 @@ void desenhaRobot();
 void createMap();
 
 
-/* Map
- 
- - Rooms (Numbered, 0 means there's no room
- 
- 0,9,0
- 6,7,8
- 0,5,0
- 2,3,4
- 0,1,0
- 
- */
 
+Map* map;
 
-
-Room* room1;
-Room* room2;
-Room* room3;
-Room* room4;
-Room* room5;
-Room* room6;
-Room* room7;
-Room* room8;
-Room* room9;
-
-
-
-
-
-Wall* merda;
 Robot* robotFofinho;
-Wall* parede1;
-Wall* parede2;
-Wall* parede3 ;
-Wall* parede4;
-Wall* parede5;
-Wall* chao;
+
 Ball * bola1;
 Ball * bola2;
 //--------------------------------- Definir cores
@@ -198,16 +167,7 @@ void drawScene(){
         //glMatrixMode(GL_MODELVIEW);
     /* LUZES */
   
-
-        room1->update();
-        room2->update();
-        room3->update();
-        room4->update();
-        room5->update();
-        room6->update();
-        room7->update();
-        room8->update();
-        room9->update();
+    map->update();
 
         /* merdas robot */
         robotFofinho->drawRobot();
@@ -308,8 +268,7 @@ void initializeObjects() {
     
     camera = new Camera();
     
-    createMap();
-    
+    map = new Map();
     
 
     bola1 =     new Ball(15,5,3,3,8,1);
@@ -324,38 +283,6 @@ void initializeObjects() {
     
     
 }
-
-
-void createMap() {
-    room1 = new Room(0,0,0,100,15,50,true,true,true,false);
-    room1->buildRoom();
-    
-    room2 = new Room(100,0,-50,100,15,50,true,true,false,true);
-    room2->buildRoom();
-    
-    room3 = new Room (100,0,0,100,15,50,false,false,false,false);
-    room3->buildRoom();
-    
-    room4 = new Room(100,0,50,100,15,50,false,true,true,true);
-    room4->buildRoom();
-    
-    room5 = new Room(200,0,0,100,15,50,true,false,true,false);
-    room5->buildRoom();
-    
-    room6 = new Room(300,0,-50,100,15,50,true,true,false,true);
-    room6->buildRoom();
-    
-    room7 = new Room(300,0,0,100,15,50,false,false,false,false);
-    room7->buildRoom();
-    
-    room8 = new Room(300,0,50,100,15,50,false,true,true,true);
-    room8->buildRoom();
-    
-    room9 = new Room(400,0,0,100,15,50,true,false,true,true);
-    room9->buildRoom();
-}
-
-
 
 
 int main (int argc, char **argv) {
