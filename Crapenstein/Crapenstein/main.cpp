@@ -226,7 +226,7 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        imag.LoadBmpFile("assets/chao.bmp");
+        imag.LoadBmpFile("assets/chaoFofinho.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -240,7 +240,7 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        imag.LoadBmpFile("assets/wolf.bmp");
+        imag.LoadBmpFile("assets/paredeFofinha2.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,

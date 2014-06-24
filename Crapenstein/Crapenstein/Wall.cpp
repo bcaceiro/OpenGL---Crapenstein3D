@@ -40,8 +40,8 @@ void Wall::draw(){
         glPushMatrix();
             glBegin(GL_QUADS);
                     glTexCoord2f(0.0f,0.0f);   glVertex3i( x,        y,         z);
-                    glTexCoord2f(1.0f,0.0f);  glVertex3i( x+width,  y,         z);
-                    glTexCoord2f(1.0f,1.0f); glVertex3i( x+width,  y+height,  z);
+                    glTexCoord2f(10.0f,0.0f);  glVertex3i( x+width,  y,         z);
+                    glTexCoord2f(10.0f,1.0f); glVertex3i( x+width,  y+height,  z);
                     glTexCoord2f(0.0f,1.0f);  glVertex3i( x,        y+height,  z);
             glEnd();
         glPopMatrix();
