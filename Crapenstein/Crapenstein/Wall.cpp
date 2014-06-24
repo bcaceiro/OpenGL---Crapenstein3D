@@ -27,6 +27,7 @@ Wall::Wall(float x,float y,float z,float width,float height,int orientation){
 void Wall::draw(){
     //printf("merda\n\n");
     //caso seja chao
+    glColor4f(1.0,1.0,1.0,1.0);
     if(orientation==0){
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[1]);
@@ -47,9 +48,9 @@ void Wall::draw(){
         glPushMatrix();
             glBegin(GL_QUADS);
                     glTexCoord2f(0.0f,0.0f);   glVertex3i( x,        y,         z);
-                    glTexCoord2f(10.0f,0.0f);  glVertex3i( x+width,  y,         z);
-                    glTexCoord2f(10.0f,10.0f); glVertex3i( x+width,  y+height,  z);
-                    glTexCoord2f(0.0f,10.0f);  glVertex3i( x,        y+height,  z);
+                    glTexCoord2f(1.0f,0.0f);  glVertex3i( x+width,  y,         z);
+                    glTexCoord2f(1.0f,1.0f); glVertex3i( x+width,  y+height,  z);
+                    glTexCoord2f(0.0f,1.0f);  glVertex3i( x,        y+height,  z);
             glEnd();
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);

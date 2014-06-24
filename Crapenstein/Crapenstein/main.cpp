@@ -1,11 +1,9 @@
 /*
-FPS control demo in GLUT by Nghia Ho
 
-SPACEBAR - toggle FPS control
-W,A,S,D - to move
-mouse - look around, inverted mouse
-left/right mouse - fly up/down
-ESC - quit
+ Crapenstein:
+ 
+    - Bruno Caceiro
+    - David Cardouzo
 
 */
 
@@ -15,10 +13,22 @@ ESC - quit
 #include <vector>
 #include "Camera.h"
 #include "Wall.h"
+#include "Robot.h"
+#include "Ball.h"
 #include "RgbImage.h"
 #include "mapLimits.h"
 #include "collidingObject.h"
 #include "torch.h"
+
+
+
+
+#define AZUL 0.0, 0.0, 1.0, 1.0
+#define VERMELHO 1.0, 0.0, 0.0, 1.0
+#define VERDE 0.0, 1.0, 0.0, 1.0
+#define BRANCO 1.0, 1.0, 1.0, 1.0
+#define BLACK 0.0, 0.0, 0.0, 1.0
+
 
 using namespace std;
 
@@ -52,34 +62,21 @@ void specialkeypressed(int key, int x, int y);
 void specialkeyUp(int key, int x, int y);
 void MouseMotion(int x, int y);
 void Mouse(int button, int state, int x, int y);
+void desenhaRobot();
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Wall* merda;
+Robot* robotFofinho;
 Wall* parede1;
 Wall* parede2;
-Wall* parede3;
+Wall* parede3 ;
 Wall* parede4;
 Wall* chao;
-
-
+Ball * bola1;
+Ball * bola2;
 //--------------------------------- Definir cores
 #define BLUE     0.0, 0.0, 1.0, 1.0
 #define RED      1.0, 0.0, 0.0, 1.0
@@ -90,6 +87,7 @@ Wall* chao;
 #define BLACK    0.0, 0.0, 0.0, 1.0
 #define GRAY     0.9, 0.92, 0.29, 1.0
 #define PI		 3.14159
+
 
 //================================================================================
 //===========================================================Variaveis e constantes
@@ -129,21 +127,29 @@ RgbImage imag;
 
 
 
+/* ROBOT */
+GLfloat robotX = 2;
+GLfloat robotZ = 2;
+GLfloat robotY = 2;
+
 
 
 void drawScene(){
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Mesa
+    
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[0]);
         glPushMatrix();
-                glTranslatef( mesaP[0], mesaP[1]+mesa/2, mesaP[2]);
+                glTranslatef( 4, 5, 5);
                 glRotatef (       90, -1, 0, 0);
                 GLUquadricObj*  y = gluNewQuadric ( );
                 gluQuadricDrawStyle ( y, GLU_FILL   );
                 gluQuadricNormals   ( y, GLU_SMOOTH );
                 gluQuadricTexture   ( y, GL_TRUE    );
-                gluSphere ( y, 0.5*mesa, 150, 150);
+                glutSolidCube(1.5);
+                //gluSphere ( y, 0.5*mesa, 150, 150);
+
                 gluDeleteQuadric ( y );
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
@@ -161,21 +167,25 @@ void drawScene(){
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);*/
 
+        //glMatrixMode(GL_MODELVIEW);
+    /* LUZES */
+  
+
+    
         parede1->draw();
         parede2->draw();
         parede3->draw();
         parede4->draw();
         chao->draw();
+        /* merdas robot */
+        robotFofinho->drawRobot();
+    bola1->update();
+        bola2->update();
+        /*LUZESSSS*/
+        GLfloat lightPos[4] = {5, 5,5, 1.0};
+        glLightfv(GL_LIGHT1,GL_POSITION, lightPos);
 
-
-        //*****************************************************
-        // A IMPLEMENTAR PELOS ALUNOS
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chaleira
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Quadro
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Parede z=0
-        //*****************************************************
-
-
+    
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
         //white = x
         //Red = y
@@ -199,12 +209,15 @@ void drawScene(){
 
 
 }
+
+
+
 void criaDefineTexturas()
 {
         //----------------------------------------- Mesa
         glGenTextures(1, &texture[0]);
         glBindTexture(GL_TEXTURE_2D, texture[0]);
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -218,7 +231,7 @@ void criaDefineTexturas()
         //----------------------------------------- Chao y=0
         glGenTextures(1, &texture[1]);
         glBindTexture(GL_TEXTURE_2D, texture[1]);
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -232,12 +245,12 @@ void criaDefineTexturas()
         //----------------------------------------- Chao y=0
         glGenTextures(1, &texture[2]);
         glBindTexture(GL_TEXTURE_2D, texture[2]);
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        imag.LoadBmpFile("assets/azulejo.bmp");
+        imag.LoadBmpFile("assets/wolf.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -246,7 +259,7 @@ void criaDefineTexturas()
         //----------------------------------------- Chao y=0
         glGenTextures(1, &texture[3]);
         glBindTexture(GL_TEXTURE_2D, texture[3]);
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -257,19 +270,26 @@ void criaDefineTexturas()
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
             imag.ImageData());
 
+}
 
-        //*****************************************************
-        // A IMPLEMENTAR PELOS ALUNOS
-        //
-        //----------------------------------------- Chaleira
-        //----------------------------------------- Parede z=0
-        //----------------------------------------- Parede x=0
-        //----------------------------------------- Quadros
-        //*****************************************************
+void initializeObjects() {
+    
+    camera = new Camera();
+    parede1 = new Wall(0,  0,0, 100,15,1);
+    parede2 = new Wall(0,  0,0, 50,15,2);
+    parede3 = new Wall(0,  0,50,100,15,1);
+    parede4 = new Wall(100,0,0, 50,15,2);
+    chao = new Wall(0,0,0,100,50,0);
+    bola1 =     new Ball(15,5,3,3,8,1);
+    bola2 =     new Ball(25,5,10,0.5,9,-1);
+    robotFofinho = new Robot(8,5,3,1.3,camera);
+    
+    
 }
 
 
 int main (int argc, char **argv) {
+    
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(wScreen, hScreen);
@@ -278,12 +298,6 @@ int main (int argc, char **argv) {
     //initialize the container of the collidableObjects
     collidableObjects.clear();
 
-    camera = new Camera();
-    parede1 = new Wall(0,  0,0, 100,15,1);
-    parede2 = new Wall(0,  0,0, 50,15,2);
-    parede3 = new Wall(0,  0,50,100,15,1);
-    parede4 = new Wall(100,0,0, 50,15,2);
-    chao = new Wall(0,0,0,100,50,0);
 
     Torch* huehuehue = new Torch();
 
@@ -305,6 +319,32 @@ int main (int argc, char **argv) {
     criaDefineTexturas( );
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
+    
+    initializeObjects();
+
+        /* LIGHTS */
+    glEnable(GL_LIGHTING);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_COLOR_MATERIAL);
+    
+    GLfloat ambientLight[4] = {0.85,0.85,0.85,1.0};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+    
+    
+    glEnable(GL_LIGHT1);
+    GLfloat lightPos[4] = {8, 6,5, 1.0};
+    glLightfv(GL_LIGHT1,GL_POSITION, lightPos);
+    GLfloat lightColor[4] = {255,0,0,1};
+	glLightfv(GL_LIGHT1,GL_DIFFUSE,					lightColor);
+    glLightfv(GL_LIGHT1,GL_SPECULAR,					lightColor);
+    
+    glLightf(GL_LIGHT1,GL_CONSTANT_ATTENUATION,	1);
+    glLightf(GL_LIGHT1,GL_LINEAR_ATTENUATION,		0.5);
+    glLightf(GL_LIGHT1,GL_QUADRATIC_ATTENUATION,	0.5);
+    glLightf(GL_LIGHT1,GL_SPOT_CUTOFF,				0.5);
+    glLightf(GL_LIGHT1,GL_SPOT_EXPONENT,			1);
+
+    
 
     glutIgnoreKeyRepeat(1);
     glutDisplayFunc(Display);
@@ -358,17 +398,22 @@ void Timer(int value)
 {
     if(g_fps_mode) {
         if(keyStates['w'] || specialKeyStates[GLUT_KEY_UP]) {
-            camera->Move(g_translation_speed);
+            robotFofinho->moveFront();
+
         }
         if(keyStates['s'] || specialKeyStates[GLUT_KEY_DOWN]) {
-            camera->Move(-g_translation_speed);
+            robotFofinho->moveBack();
+
         }
         if(keyStates['a'] || specialKeyStates[GLUT_KEY_LEFT]) {
-            camera->Strafe(g_translation_speed);
+            robotFofinho->moveLeft();
+
         }
         if(keyStates['d'] ||  specialKeyStates[GLUT_KEY_RIGHT]) {
-            camera->Strafe(-g_translation_speed);
+            robotFofinho->moveRight();
+
         }
+        
         if(g_mouse_left_down) {
             camera->Fly(-g_translation_speed);
         }
@@ -393,6 +438,10 @@ void Keyboard(unsigned char key, int x, int y)
     if(key == 27) {
         exit(0);
     }
+   
+    
+
+    
 
     if(key == ' ') {
         g_fps_mode = !g_fps_mode;
@@ -478,5 +527,7 @@ void MouseMotion(int x, int y)
         just_warped = true;
     }
 }
+
+
 
 
