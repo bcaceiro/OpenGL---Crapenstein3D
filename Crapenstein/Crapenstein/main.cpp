@@ -380,6 +380,13 @@ void Timer(int value)
         if(keyStates['d'] ||  specialKeyStates[GLUT_KEY_RIGHT]) {
             camera->Strafe(-g_translation_speed);
         }
+        if(keyStates['l'] ) {
+            robotFofinho->moveRight();
+        }
+        if(keyStates['j']) {
+            robotFofinho->moveLeft();
+        }
+        
         if(g_mouse_left_down) {
             camera->Fly(-g_translation_speed);
         }
@@ -404,6 +411,10 @@ void Keyboard(unsigned char key, int x, int y)
     if(key == 27) {
         exit(0);
     }
+   
+    
+
+    
 
     if(key == ' ') {
         g_fps_mode = !g_fps_mode;

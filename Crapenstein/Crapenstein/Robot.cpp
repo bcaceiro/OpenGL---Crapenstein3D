@@ -30,9 +30,10 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
 
 void Robot::drawRobot() {
     
+    
     //drawRobotHead(1.5,5,4.5,3);
     drawRobotHead(1.5,posX + torsoRadius,posY - 0.5,posZ);
-    laserPower(posX +0.5,posY - 0.1,posZ);
+    //laserPower(posX +0.5,posY - 0.1,posZ);
     //drawRobotEyes(0.3, 4.3,5,4,1.4);
     drawRobotEyes(0.3, posX + torsoRadius - 0.7,posY,posZ + 1,1.4);
     //drawRobotTorso(1.3, 7.0, 5,5,3);
@@ -134,5 +135,24 @@ void Robot::laserPower(GLfloat posX, GLfloat posY, GLfloat posZ) {
     glPopMatrix();
     
 }
+
+
+void Robot::moveLeft() {
+    posX+=0.5;
+}
+
+void Robot::moveRight() {
+    posX-=0.5;
+}
+
+void Robot::moveFront() {
+    posZ+=0.5;
+}
+
+void Robot::moveBack() {
+    posZ-=0.5;
+}
+
+
 
 #endif

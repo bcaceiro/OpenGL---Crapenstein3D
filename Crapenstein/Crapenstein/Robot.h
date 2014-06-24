@@ -29,6 +29,10 @@ public:
     void drawRobotTorso(GLfloat radius,GLfloat height, GLfloat posX, GLfloat posY, GLfloat posZ);
     void drawRobotArms(GLfloat radius, GLfloat length, GLfloat armsDistance, GLfloat posX, GLfloat posY, GLfloat posZ);
     void laserPower(GLfloat posX, GLfloat posY, GLfloat posZ);
+    void moveLeft();
+    void moveRight();
+    void moveFront();
+    void moveBack();
     
 private:
     GLfloat posX;
