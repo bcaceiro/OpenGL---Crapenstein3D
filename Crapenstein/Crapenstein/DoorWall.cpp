@@ -12,10 +12,11 @@
 #include "OpenGLIncludes.h"
 
 extern GLuint texture[4];
-//constructor
+
+//Constructor
 DoorWall::DoorWall(float x,float y,float z,float width,float height,int orientation){
-    //fazer cenas, dá jeito!
-    //printf("\nCenas= %d\n",cenas);
+
+
     this->x = x;
     this->y = y;
     this->z = z;
@@ -24,156 +25,178 @@ DoorWall::DoorWall(float x,float y,float z,float width,float height,int orientat
     this->orientation = orientation;
     canOpenDoor = false;
     isOpen = false;
-    
-    aux = 0.1;
+    doorState = 0;
+    aux = 0;
     
     
   }
-void DoorWall::draw(){
-    //printf("merda\n\n");
-    //caso seja chao
+void DoorWall::updateWalls() {
 
     //caso seja parede alinhada no x
-    /*
-    if(orientation==1) {
+
+    if(orientation == 1) {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[2]);
         glPushMatrix();
             glBegin(GL_QUADS);
                 glTexCoord2f(0.0f,0.0f);   glVertex3i( x,        y,         z);
-                glTexCoord2f(10.0f,0.0f);  glVertex3i( x+width,  y,         z);
-                glTexCoord2f(10.0f,1.0f); glVertex3i( x+width,  y+height,  z);
+                glTexCoord2f(10.0f,0.0f);  glVertex3i( x+width/2-10,  y,         z);
+                glTexCoord2f(10.0f,1.0f); glVertex3i( x+width/2-10,  y+height,  z);
                 glTexCoord2f(0.0f,1.0f);  glVertex3i( x,        y+height,  z);
+            glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+        
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[2]);
+        glPushMatrix();
+            glBegin(GL_QUADS);
+                glTexCoord2f(0.0f,0.0f);   glVertex3i( x+width / 2 + 10,        y,         z);
+                glTexCoord2f(10.0f,0.0f);  glVertex3i( x + width,  y,         z);
+                glTexCoord2f(10.0f,1.0f); glVertex3i( x+width,  y+height,  z);
+                glTexCoord2f(0.0f,1.0f);  glVertex3i( x +width/2 + 10,        y+height,  z);
             glEnd();
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
         //printf("acabou a merda\n");
     }
-     */
-    //caso seja parede alinhada em z
-    /*
-    if(orientation==2){
+
+    
+    if(orientation == 2) {
+        // Left Side Wall
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[3]);
         glPushMatrix();
             glBegin(GL_QUADS);
                 glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z);
-                glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width);
-                glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width);
+                glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width/2 - 10);
+                glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width/2 - 10);
                 glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z);
             glEnd();
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
-        //printf("acabou a merda\n");
-    }
-     */
     
-    
-    // LEFT SIDE
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texture[3]);
-    glPushMatrix();
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z);
-    glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width/2 - 10);
-    glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width/2 - 10);
-    glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z);
-    glEnd();
-    glPopMatrix();
-    glDisable(GL_TEXTURE_2D);
-    
-    
-    //RIGHT SIDE
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texture[3]);
-    glPushMatrix();
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z+width/2+10);
-    glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width);
-    glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width);
-    glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z+width/2+10);
-    glEnd();
-    glPopMatrix();
-    glDisable(GL_TEXTURE_2D);
-    
-    if(!canOpenDoor) {
-        //LEFT DOOR
+        //Right Side Wall
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D,texture[1]);
+        glBindTexture(GL_TEXTURE_2D,texture[3]);
         glPushMatrix();
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z+width/2-10);
-        glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width/2);
-        glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width/2);
-        glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z+width/2-10);
-        glEnd();
-        glPopMatrix();
-    glDisable(GL_TEXTURE_2D);
-    
-    //RIGHT DOOR
-    
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texture[1]);
-    glPushMatrix();
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z+width/2+10);
-    glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width/2);
-    glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width/2);
-    glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z+width/2+10);
-    glEnd();
-    glPopMatrix();
-    glDisable(GL_TEXTURE_2D);
-    }
-    
-    if(canOpenDoor) {
-        if(!isOpen) {
-        aux +=0.1;
-        if(z+width/2-10-aux > z ) {
-        //LEFT DOOR
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D,texture[1]);
-        glPushMatrix();
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z+width/2-10-aux);
-        glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width/2-aux);
-        glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width/2-aux);
-        glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z+width/2-10-aux);
-        glEnd();
+            glBegin(GL_QUADS);
+                glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z+width/2+10);
+                glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width);
+                glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width);
+                glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z+width/2+10);
+            glEnd();
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
-            
-            
-            
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D,texture[1]);
-            glPushMatrix();
-            glBegin(GL_QUADS);
-            glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z+width/2+10+aux);
-            glTexCoord2f(10.0f,0.0f);  glVertex3i( x,  y,         z+width/2+aux);
-            glTexCoord2f(10.0f,10.0f); glVertex3i( x,  y+height,  z+width/2+aux);
-            glTexCoord2f(0.0f,10.0f);  glVertex3i( x,  y+height,  z+width/2+10+aux);
-            glEnd();
-            glPopMatrix();
-            glDisable(GL_TEXTURE_2D);
-    
-            
-            
-        
-        }
-        else
-            isOpen = true;
-        }
-        
-        
     }
     
+   }
 
+
+
+
+void DoorWall:: updateDoors() {
+
+    if( doorState == 0)
+        aux = 0;
+    
+    //Open Door
+    else if (doorState == 1) {
+        if(z + width / 2 - 10 - aux > z )
+            aux+=0.3;
+    }
+    
+    // Close the Door
+    else if (doorState == 2) {
+        
+        if(z + width / 2 - 10 - aux < z + width / 2 -10 )
+            aux-=0.3;
+
+        if(z + width / 2 - 10 - aux == z + width / 2 - 10 )
+            doorState = 0;
+    }
+    
+    if(orientation == 1) {
+        // Left Door
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[0]);
+        glPushMatrix();
+            glBegin(GL_QUADS);
+                glTexCoord2f(0.0f,0.0f);  glVertex3i( x + width/2-10-aux ,  y,         z);
+                glTexCoord2f(1.0f,0.0f);  glVertex3i( x + width/2-aux,  y,         z);
+                glTexCoord2f(1.0f,1.0f);  glVertex3i( x + width/2-aux,  y+height,  z);
+                glTexCoord2f(0.0f,1.0f);  glVertex3i( x+width/2-10-aux,  y+height,  z);
+            glEnd();
+            glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+        
+        
+        // Right Door
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[0]);
+        glPushMatrix();
+            glBegin(GL_QUADS);
+                glTexCoord2f(0.0f,0.0f);  glVertex3i( x +width/2+10+aux,  y,         z);
+                glTexCoord2f(1.0f,0.0f);  glVertex3i( x +width/2+aux,  y,         z);
+                glTexCoord2f(1.0f,1.0f);  glVertex3i( x +width/2+aux,  y+height,  z);
+                glTexCoord2f(0.0f,1.0f);  glVertex3i( x+width/2+10+aux,  y+height,  z);
+            glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+    }
+    
+    
+
+    if(orientation == 2) {
+    // Left Door
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,texture[0]);
+    glPushMatrix();
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f,0.0f);  glVertex3i( x,  y,          z + width / 2 - 10 - aux);
+            glTexCoord2f(1.0f,0.0f);  glVertex3i( x,  y,          z + width / 2 - aux);
+            glTexCoord2f(1.0f,1.0f);  glVertex3i( x,  y + height, z + width / 2 - aux);
+            glTexCoord2f(0.0f,1.0f);  glVertex3i( x,  y + height, z + width / 2 - 10 - aux);
+        glEnd();
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+    
+    
+    // Right Door
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,texture[0]);
+    glPushMatrix();
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f,0.0f);   glVertex3i( x,  y,         z+width/2+10+aux);
+            glTexCoord2f(1.0f,0.0f);  glVertex3i( x,  y,         z+width/2+aux);
+            glTexCoord2f(1.0f,1.0f); glVertex3i( x,  y+height,  z+width/2+aux);
+            glTexCoord2f(0.0f,1.0f);  glVertex3i( x,  y+height,  z+width/2+10+aux);
+        glEnd();
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+    }
     
     
 }
 
-void DoorWall::openDoor(){
-    canOpenDoor = true;
+void DoorWall::update() {
+    
+    updateWalls();
+    updateDoors();
+    
+    
+}
+
+void DoorWall::openDoor() {
+
+    if(doorState == 1) {
+        doorState = 2;
+    }
+    else if(doorState == 0) {
+        doorState = 1;
+        aux = 0.3;
+    }
+
 }
 
 

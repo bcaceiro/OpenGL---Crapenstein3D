@@ -54,7 +54,13 @@ int g_viewport_width = 0;
 int g_viewport_height = 0;
 
 Map* map;
-DoorWall* testeDoor;
+DoorWall* doorRoom1;
+DoorWall* doorRoom2;
+DoorWall* doorRoom4;
+DoorWall* doorRoom5;
+DoorWall* doorRoom6;
+DoorWall* doorRoom8;
+DoorWall* doorRoom9;
 
 Robot* robotFofinho;
 
@@ -66,10 +72,22 @@ Cube* cuboTeste3;
 Ball * bola1;
 Ball * bola2;
 
+bool openDoor = false;
+
 void drawScene(){
 
     map->update();
-    testeDoor->draw();
+    doorRoom1->update();
+
+    doorRoom2->update();
+
+    doorRoom4->update();
+    doorRoom5->update();
+    doorRoom6->update();
+    doorRoom8->update();
+    doorRoom9->update();
+
+
         /* merdas robot */
         robotFofinho->drawRobot();
         bola1->update();
@@ -116,7 +134,7 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        imag.LoadBmpFile("assets/mesa.bmp");
+        imag.LoadBmpFile("assets/doorFofa.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
                 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -168,7 +186,17 @@ void initializeObjects() {
     camera = new Camera();
     
     map = new Map();
-    testeDoor = new DoorWall(100,0,0,50,15,2);
+    doorRoom1 = new DoorWall(100,0,0,50,15,2);
+
+    doorRoom2 = new DoorWall(100,0,0,100,15,1);
+
+    doorRoom4 = new DoorWall(100,0,50,100,15,1);
+    doorRoom5 = new DoorWall(300,0,0,50,15,2);
+    doorRoom6 = new DoorWall(300,0,0,100,15,1);
+    doorRoom8 = new DoorWall(300,0,50,100,15,2);
+    doorRoom9 = new DoorWall(400,0,0,50,15,2);
+
+
 
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
@@ -335,10 +363,6 @@ void Timer(int value)
         }
 
 
-
-        if(keyStates['p']) {
-            testeDoor->openDoor();
-        }
     }
     glutTimerFunc(1, Timer, 0);
 }
@@ -353,6 +377,8 @@ void Idle()
 
 void Keyboard(unsigned char key, int x, int y)
 {
+    
+    
     if(key == 27) {
         g_fps_mode = !g_fps_mode;
 
@@ -370,6 +396,18 @@ void Keyboard(unsigned char key, int x, int y)
 
 void KeyboardUp(unsigned char key, int x, int y)
 {
+    if(key == 'p') {
+        doorRoom1->openDoor();
+
+
+        doorRoom2->openDoor();
+        doorRoom4->openDoor();
+        doorRoom5->openDoor();
+        doorRoom6->openDoor();
+                doorRoom8->openDoor();
+                doorRoom9->openDoor();
+    }
+    
     keyStates[tolower(key)] = false;
 }
 

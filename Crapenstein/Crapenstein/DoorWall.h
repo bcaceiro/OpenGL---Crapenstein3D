@@ -30,6 +30,9 @@ public:
     ~DoorWall();
     void draw();
     void openDoor();
+    void updateWalls();
+    void updateDoors();
+    void update();
    
     
 private:
@@ -41,6 +44,7 @@ private:
     int orientation;
     bool canOpenDoor;
     bool isOpen;
+    GLint doorState;
     
     GLfloat aux;
 };

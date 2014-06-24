@@ -18,7 +18,7 @@ CollidingObject::CollidingObject(){
  * @param width     largura (espessura do z)
  */
 void CollidingObject::setBounds(float x, float y ,float z ,float thickness,float height,float width){
-    printf("Setting bounds\n");
+
     this->collide_minX = x;
     this->collide_minY = y;
     this->collide_minZ = z;
