@@ -64,6 +64,7 @@ void specialkeyUp(int key, int x, int y);
 void MouseMotion(int x, int y);
 void Mouse(int button, int state, int x, int y);
 void desenhaRobot();
+void createMap();
 
 
 /* Map
@@ -82,7 +83,15 @@ void desenhaRobot();
 
 Room* room1;
 Room* room2;
-Wall* floorRoom3;
+Room* room3;
+Room* room4;
+Room* room5;
+Room* room6;
+Room* room7;
+Room* room8;
+Room* room9;
+
+
 
 
 
@@ -190,17 +199,16 @@ void drawScene(){
     /* LUZES */
   
 
-    room1->update();
-    room2->update();
-    floorRoom3->draw();
-    /*
-        parede1->draw();
-        parede2->draw();
-        parede3->draw();
-        parede4->draw();
-        parede5->draw();
-        chao->draw();
-     */
+        room1->update();
+        room2->update();
+        room3->update();
+        room4->update();
+        room5->update();
+        room6->update();
+        room7->update();
+        room8->update();
+        room9->update();
+
         /* merdas robot */
         robotFofinho->drawRobot();
         bola1->update();
@@ -299,28 +307,11 @@ void criaDefineTexturas()
 void initializeObjects() {
     
     camera = new Camera();
-    /*
-    parede1 = new Wall(0,  0,0, 100,15,1);
-    parede2 = new Wall(0,  0,0, 50,15,2);
-    parede3 = new Wall(0,  0,50,100,15,1);
-    parede4 = new Wall(100,0,0, 50,15,2);
-     */
     
-    //Room(GLfloat roomPosX, GLfloat roomPosY, GLfloat roomPosZ, GLfloat leftWallWidth, GLfloat roomHeight, GLfloat backWallWidth, bool isLeftWallActive, bool isBackWallActive, bool isRightWallActive, bool isFrontWallActive);
-
-    
-    room1 = new Room(0,0,0,100,15,50,true,true,true,false);
-    room1->buildRoom();
-    
-    room2 = new Room(100,0,-50,100,15,50,true,true,false,true);
-    room2->buildRoom();
-    
-    floorRoom3 = new Wall (100,0,0,100,50,0);
-    
+    createMap();
     
     
 
-    chao = new Wall(0,0,0,100,50,0);
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
     robotFofinho = new Robot(8,5,3,1.3,camera);
@@ -332,6 +323,36 @@ void initializeObjects() {
     
     
     
+}
+
+
+void createMap() {
+    room1 = new Room(0,0,0,100,15,50,true,true,true,false);
+    room1->buildRoom();
+    
+    room2 = new Room(100,0,-50,100,15,50,true,true,false,true);
+    room2->buildRoom();
+    
+    room3 = new Room (100,0,0,100,15,50,false,false,false,false);
+    room3->buildRoom();
+    
+    room4 = new Room(100,0,50,100,15,50,false,true,true,true);
+    room4->buildRoom();
+    
+    room5 = new Room(200,0,0,100,15,50,true,false,true,false);
+    room5->buildRoom();
+    
+    room6 = new Room(300,0,-50,100,15,50,true,true,false,true);
+    room6->buildRoom();
+    
+    room7 = new Room(300,0,0,100,15,50,false,false,false,false);
+    room7->buildRoom();
+    
+    room8 = new Room(300,0,50,100,15,50,false,true,true,true);
+    room8->buildRoom();
+    
+    room9 = new Room(400,0,0,100,15,50,true,false,true,true);
+    room9->buildRoom();
 }
 
 

@@ -57,7 +57,7 @@ void Room::buildRoom() {
         rightWall = new Wall (posX, posY, posZ + backWidth, leftWidth, height, 1);
 
     if(frontWallActive)
-        frontWall = new Wall(posX + leftWidth,0,0,backWidth,height,2);
+        frontWall = new Wall(posX + leftWidth,posY,posZ,backWidth,height,2);
     
     floor = new Wall (posX,posY,posZ, leftWidth,backWidth,0);
     
