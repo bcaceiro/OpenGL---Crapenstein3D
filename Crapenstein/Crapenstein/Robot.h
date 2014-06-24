@@ -13,7 +13,7 @@
 #include "OpenGLIncludes.h"
 #include "Camera.h"
 
-class Robot
+class Robot : public CollidingObject
 {
 public:
     

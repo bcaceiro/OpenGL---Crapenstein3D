@@ -120,6 +120,11 @@ bool Wall::isColliding(CollidingObject* obj){
     if(m_z+0.1>MAP_HEIGHT)
         m_z = MAP_HEIGHT-0.2;*/
 
+    printf("Wall:(%f,%f,%f,%f,%f,%f)\n",
+    this->collide_minX,this->collide_maxX,this->collide_minY,this->collide_maxY,this->collide_minZ,this->collide_maxZ);
+    printf("OBJ:(%f,%f,%f,%f,%f,%f)\n",
+    obj->collide_minX,obj->collide_maxX,obj->collide_minY,obj->collide_maxY,obj->collide_minZ,obj->collide_maxZ);
+
 
     if(this->collide_minX < obj->collide_maxX && this->collide_maxX > obj->collide_minX)
         if(this->collide_minY < obj->collide_maxY && this->collide_maxY > obj->collide_minY)
@@ -127,6 +132,7 @@ bool Wall::isColliding(CollidingObject* obj){
                 printf("Colliding(%d)...\n",orientation);
                 return true;
             }
+    printf("Not Colliding...\n");
     return false;
 }
 

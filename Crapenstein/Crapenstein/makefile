@@ -10,7 +10,7 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	INCLUDES = -I/usr/local/include/GLFW/
 	OTHERLIBS = -L/usr/local/lib/ -lglfw3 -lXxf86vm -lGLEW -lXi -lXrandr -lpthread
-	LIBS =  -lX11 -lglut -lGL -lGLU -lm
+	LIBS =  -lX11 -lglut -lGL -lGLU -lm -g
 	CPP=g++
 endif
 

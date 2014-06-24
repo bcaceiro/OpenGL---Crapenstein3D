@@ -250,7 +250,7 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        imag.LoadBmpFile("assets/wolf.bmp");
+        imag.LoadBmpFile("assets/chao.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -264,7 +264,7 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        imag.LoadBmpFile("assets/parede.bmp");
+        imag.LoadBmpFile("assets/parede3.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -283,6 +283,11 @@ void initializeObjects() {
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
     robotFofinho = new Robot(8,5,3,1.3,camera);
+
+    //set Robot Bounds FIXME move inside the robot class
+    robotFofinho->setBounds(8,5,3,1.3,1.3,5);
+    //set the camera to have the bounds of the robot
+    camera->setObject(robotFofinho);
     
     
 }
@@ -298,14 +303,6 @@ int main (int argc, char **argv) {
     //initialize the container of the collidableObjects
     collidableObjects.clear();
 
-
-    Torch* huehuehue = new Torch();
-
-    collidableObjects.push_back(parede1);
-    collidableObjects.push_back(parede2);
-    collidableObjects.push_back(parede3);
-    collidableObjects.push_back(parede4);
-    collidableObjects.push_back(chao);
     //collidableObjects.push_back(huehuehue);
     /*float cenas1,cenas2,cenas3;
     unsigned int vector_size = collidableObjects.size();
@@ -321,6 +318,13 @@ int main (int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     
     initializeObjects();
+
+    Torch* huehuehue = new Torch();
+    collidableObjects.push_back(parede1);
+    collidableObjects.push_back(parede2);
+    collidableObjects.push_back(parede3);
+    collidableObjects.push_back(parede4);
+    collidableObjects.push_back(chao);
 
         /* LIGHTS */
     glEnable(GL_LIGHTING);
