@@ -15,12 +15,14 @@
 #include "Room.h"
 #include "Wall.h"
 #include "Robot.h"
+#include "DoorWall.h"
 #include "Map.h"
 #include "Ball.h"
 #include "RgbImage.h"
 #include "mapLimits.h"
 #include "collidingObject.h"
 #include "torch.h"
+#include "Cube.h"
 
 
 
@@ -70,7 +72,15 @@ void createMap();
 
 Map* map;
 
+
+DoorWall* testeDoor;
+
 Robot* robotFofinho;
+
+
+Cube* cuboTeste;
+Cube* cuboTeste2;
+Cube* cuboTeste3;
 
 Ball * bola1;
 Ball * bola2;
@@ -168,11 +178,15 @@ void drawScene(){
     /* LUZES */
   
     map->update();
+    testeDoor->draw();
 
         /* merdas robot */
         robotFofinho->drawRobot();
         bola1->update();
         bola2->update();
+    cuboTeste->draw();
+        cuboTeste2->draw();
+            cuboTeste3->draw();
         /*LUZESSSS*/
         GLfloat lightPos[4] = {5, 5,5, 1.0};
         glLightfv(GL_LIGHT1,GL_POSITION, lightPos);
@@ -269,11 +283,16 @@ void initializeObjects() {
     camera = new Camera();
     
     map = new Map();
-    
+    testeDoor = new DoorWall(100,0,0,50,15,2);
 
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
     robotFofinho = new Robot(8,5,3,1.3,camera);
+    
+    cuboTeste = new Cube(30,2,25,2,0.25, 1.0f,0.0f,0.0f);
+    cuboTeste2 = new Cube(40,2,25,2,0.25, 0.0f,1.0f,0.0f);
+    cuboTeste3 = new Cube(50,2,25,2,0.25, 0.0f,0.0f,1.0f);
+
 
     //set Robot Bounds FIXME move inside the robot class
     robotFofinho->setBounds(8,5,3,1.3,1.3,5);
@@ -410,6 +429,13 @@ void Timer(int value)
 
         }
         
+        
+        
+        if(keyStates['p']) {
+            testeDoor->openDoor();
+        }
+        
+
         if(g_mouse_left_down) {
             camera->Fly(-g_translation_speed);
         }
@@ -435,9 +461,7 @@ void Keyboard(unsigned char key, int x, int y)
         exit(0);
     }
    
-    
 
-    
 
     if(key == ' ') {
         g_fps_mode = !g_fps_mode;
