@@ -11,13 +11,14 @@
 #include <stdio.h>
 #include <assert.h>
 #include "OpenGLIncludes.h"
+#include "Camera.h"
 
 class Robot
 {
 public:
     
     //Constructor
-    Robot(GLfloat robotPosX, GLfloat robotPosY,GLfloat robotPosZ, GLfloat torsoRadius);
+    Robot(GLfloat robotPosX, GLfloat robotPosY,GLfloat robotPosZ, GLfloat torsoRadius, Camera * globalCamera);
     
     //Destroy
     ~Robot();
@@ -39,6 +40,8 @@ private:
     GLfloat posY;
     GLfloat posZ;
     GLfloat torsoRadius;
+    Camera * cam;
+    
 };
 
 inline Robot::~Robot()

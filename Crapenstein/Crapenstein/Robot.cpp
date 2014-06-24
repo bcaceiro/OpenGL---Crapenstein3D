@@ -12,11 +12,12 @@
 
 #include <stdio.h>
 #include "Robot.h"
+#include "Camera.h"
 #include "OpenGLIncludes.h"
 
 
 //Constructor
-Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat RobotTorsoRadius) {
+Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat RobotTorsoRadius, Camera * globalCamera) {
     
     //new Robot(8,5,3,1.3);
     
@@ -24,6 +25,7 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
     posY = robotPosY;
     posZ = robotPosZ;
     torsoRadius = RobotTorsoRadius;
+    cam = globalCamera;
 }
 
 
@@ -139,18 +141,22 @@ void Robot::laserPower(GLfloat posX, GLfloat posY, GLfloat posZ) {
 
 void Robot::moveLeft() {
     posX+=0.5;
+    cam->Strafe(0.5);
 }
 
 void Robot::moveRight() {
-    posX-=0.5;
+    posX -= 0.5;
+    cam->Strafe(-0.5);
 }
 
 void Robot::moveFront() {
-    posZ+=0.5;
+    posZ += 0.5;
+    cam->Move(0.5);
 }
 
 void Robot::moveBack() {
-    posZ-=0.5;
+    posZ -= 0.5;
+    cam->Move(-0.5);
 }
 
 

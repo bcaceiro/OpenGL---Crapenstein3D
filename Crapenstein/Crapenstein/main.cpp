@@ -272,7 +272,7 @@ void initializeObjects() {
     chao = new Wall(0,0,0,100,50,0);
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
-    robotFofinho = new Robot(8,5,3,1.3);
+    robotFofinho = new Robot(8,5,3,1.3,camera);
     
     
 }
@@ -369,22 +369,20 @@ void Timer(int value)
 {
     if(g_fps_mode) {
         if(keyStates['w'] || specialKeyStates[GLUT_KEY_UP]) {
-            camera->Move(g_translation_speed);
+            robotFofinho->moveFront();
+
         }
         if(keyStates['s'] || specialKeyStates[GLUT_KEY_DOWN]) {
-            camera->Move(-g_translation_speed);
+            robotFofinho->moveBack();
+
         }
         if(keyStates['a'] || specialKeyStates[GLUT_KEY_LEFT]) {
-            camera->Strafe(g_translation_speed);
+            robotFofinho->moveLeft();
+
         }
         if(keyStates['d'] ||  specialKeyStates[GLUT_KEY_RIGHT]) {
-            camera->Strafe(-g_translation_speed);
-        }
-        if(keyStates['l'] ) {
             robotFofinho->moveRight();
-        }
-        if(keyStates['j']) {
-            robotFofinho->moveLeft();
+
         }
         
         if(g_mouse_left_down) {
