@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cmath>
 #include "Camera.h"
+#include "Room.h"
 #include "Wall.h"
 #include "Robot.h"
 #include "Ball.h"
@@ -59,6 +60,23 @@ void Mouse(int button, int state, int x, int y);
 void desenhaRobot();
 
 
+/* Map
+ 
+ - Rooms (Numbered, 0 means there's no room
+ 
+ 0,9,0
+ 6,7,8
+ 0,5,0
+ 2,3,4
+ 0,1,0
+ 
+ */
+
+
+
+Room* room1;
+Room* room2;
+Wall* floorRoom3;
 
 
 
@@ -68,6 +86,7 @@ Wall* parede1;
 Wall* parede2;
 Wall* parede3 ;
 Wall* parede4;
+Wall* parede5;
 Wall* chao;
 Ball * bola1;
 Ball * bola2;
@@ -165,12 +184,17 @@ void drawScene(){
     /* LUZES */
   
 
-    
+    room1->update();
+    room2->update();
+    floorRoom3->draw();
+    /*
         parede1->draw();
         parede2->draw();
         parede3->draw();
         parede4->draw();
+        parede5->draw();
         chao->draw();
+     */
         /* merdas robot */
         robotFofinho->drawRobot();
     bola1->update();
@@ -240,7 +264,7 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        imag.LoadBmpFile("assets/paredeFofinha2.bmp");
+        imag.LoadBmpFile("assets/parede3.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -254,7 +278,7 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        imag.LoadBmpFile("assets/parede.bmp");
+        imag.LoadBmpFile("assets/parede3.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -265,17 +289,37 @@ void criaDefineTexturas()
 void initializeObjects() {
     
     camera = new Camera();
+    /*
     parede1 = new Wall(0,  0,0, 100,15,1);
     parede2 = new Wall(0,  0,0, 50,15,2);
     parede3 = new Wall(0,  0,50,100,15,1);
     parede4 = new Wall(100,0,0, 50,15,2);
+     */
+    
+    //Room(GLfloat roomPosX, GLfloat roomPosY, GLfloat roomPosZ, GLfloat leftWallWidth, GLfloat roomHeight, GLfloat backWallWidth, bool isLeftWallActive, bool isBackWallActive, bool isRightWallActive, bool isFrontWallActive);
+
+    
+    room1 = new Room(0,0,0,100,15,50,true,true,true,false);
+    room1->buildRoom();
+    
+    room2 = new Room(100,0,-50,100,15,50,true,true,false,true);
+    room2->buildRoom();
+    
+    floorRoom3 = new Wall (100,0,0,100,50,0);
+    
+    
+    
+
     chao = new Wall(0,0,0,100,50,0);
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
     robotFofinho = new Robot(8,5,3,1.3,camera);
     
     
+    
 }
+
+
 
 
 int main (int argc, char **argv) {
