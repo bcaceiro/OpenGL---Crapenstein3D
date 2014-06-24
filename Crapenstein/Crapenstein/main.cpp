@@ -12,10 +12,13 @@ ESC - quit
 #include "OpenGLIncludes.h"
 #include <iostream>
 #include <cmath>
+#include <vector>
 #include "Camera.h"
 #include "Wall.h"
 #include "RgbImage.h"
 #include "mapLimits.h"
+#include "collidingObject.h"
+#include "torch.h"
 
 using namespace std;
 
@@ -26,6 +29,9 @@ void Timer(int value);
 void Idle();
 
 Camera* camera;
+
+vector<CollidingObject*> collidableObjects;
+vector<CollidingObject*>::iterator collidableObjectsIterator;
 
 bool keyStates[256] = {false};
 bool specialKeyStates[256] = {false};
@@ -171,6 +177,10 @@ void drawScene(){
 
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
+        //white = x
+        //Red = y
+        //Blue = z
+
         glColor4f(WHITE);
         glBegin(GL_LINES);
                 glVertex3i( 0, 0, 0);
@@ -265,12 +275,31 @@ int main (int argc, char **argv) {
     glutInitWindowSize(wScreen, hScreen);
     glutCreateWindow("CGenstein");
 
+    //initialize the container of the collidableObjects
+    collidableObjects.clear();
+
     camera = new Camera();
     parede1 = new Wall(0,  0,0, 100,15,1);
     parede2 = new Wall(0,  0,0, 50,15,2);
     parede3 = new Wall(0,  0,50,100,15,1);
     parede4 = new Wall(100,0,0, 50,15,2);
     chao = new Wall(0,0,0,100,50,0);
+
+    Torch* huehuehue = new Torch();
+
+    collidableObjects.push_back(parede1);
+    collidableObjects.push_back(parede2);
+    collidableObjects.push_back(parede3);
+    collidableObjects.push_back(parede4);
+    collidableObjects.push_back(chao);
+    //collidableObjects.push_back(huehuehue);
+    /*float cenas1,cenas2,cenas3;
+    unsigned int vector_size = collidableObjects.size();
+    for(unsigned int i = 0; i < vector_size; ++i){
+        ((CollidingObject*)collidableObjects[i])->setBounds(0.0,0.0,0.0,0.0,0.0);
+        ((CollidingObject*)collidableObjects[i])->isColliding(cenas1,cenas2,cenas3);
+    }*/
+
     glClearColor(BLACK);
     glShadeModel(GL_SMOOTH);
     criaDefineTexturas( );

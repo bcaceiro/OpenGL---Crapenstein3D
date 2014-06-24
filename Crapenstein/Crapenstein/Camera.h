@@ -27,6 +27,7 @@ public:
 	void RotatePitch(float angle);
 
 private:
+
 	float m_x, m_y, m_z;   // Position
     float m_lx, m_ly, m_lz; // Direction vector of where we are looking at
 	float m_yaw, m_pitch; // Various rotation angles

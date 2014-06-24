@@ -3,8 +3,15 @@
 #include "OpenGLIncludes.h"
 #include "Camera.h"
 #include "mapLimits.h"
+#include <vector>
+#include "collidingObject.h"
 
 const float limit = 89.0 * M_PI / 180.0;
+
+/*fixme*/
+using namespace std;
+extern vector<CollidingObject*> collidableObjects;
+
 
 void Camera::Init()
 {
@@ -24,14 +31,21 @@ void Camera::Refresh()
     m_strafe_lx = cos(m_yaw - M_PI_2);
     m_strafe_lz = sin(m_yaw - M_PI_2);
 
-    if(m_x<0.1)
+
+
+    /*unsigned int vector_size = collidableObjects.size();
+    for(unsigned int i = 0; i < vector_size; ++i){
+        ((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z);
+    }*/
+
+    /*if(m_x<0.1)
         m_x = 0.2;
     if(m_x+0.1>MAP_WIDTH)
         m_x = MAP_WIDTH-0.2;
     if(m_z<0.1)
         m_z = 0.2;
     if(m_z+0.1>MAP_HEIGHT)
-        m_z = MAP_HEIGHT-0.2;
+        m_z = MAP_HEIGHT-0.2;*/
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -71,15 +85,40 @@ void Camera::Move(float incr)
     m_x = m_x + incr*lx;
     //this line is comment because the player can't move the camera vertically?
     //m_y = m_y + incr*ly;
+    unsigned int vector_size = collidableObjects.size();
+    for(unsigned int i = 0; i < vector_size; ++i){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z)==true){
+            m_x = m_x - incr*lx;
+            break;
+        }
+    }
     m_z = m_z + incr*lz;
-
+    for(unsigned int i = 0; i < vector_size; ++i){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z)){
+            m_z = m_z - incr*lx;
+            break;
+        }
+    }
     Refresh();
 }
 
 void Camera::Strafe(float incr)
 {
     m_x = m_x + incr*m_strafe_lx;
+    unsigned int vector_size = collidableObjects.size();
+    for(unsigned int i = 0; i < vector_size; ++i){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z)){
+            m_x = m_x - incr*m_strafe_lx;
+            break;
+        }
+    }
     m_z = m_z + incr*m_strafe_lz;
+    for(unsigned int i = 0; i < vector_size; ++i){
+        if(((CollidingObject*)collidableObjects[i])->isColliding(m_x,m_y,m_z)){
+             m_z = m_z - incr*m_strafe_lz;
+            break;
+        }
+    }
 
     Refresh();
 }

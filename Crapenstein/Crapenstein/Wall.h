@@ -2,11 +2,12 @@
 #define WALL_H
 #include <stdio.h>
 #include <assert.h>
+#include "collidingObject.h"
 
 // Include the next line to turn off the routines that use OpenGL
 // #define RGBIMAGE_DONT_USE_OPENGL
 
-class Wall
+class Wall : public CollidingObject
 {
 public:
     /**
@@ -22,6 +23,7 @@ public:
     //destroy
     ~Wall();
     void draw();
+    bool isColliding(CollidingObject* obj);
 
 private:
     float x;
