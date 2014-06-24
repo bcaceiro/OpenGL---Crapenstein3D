@@ -32,9 +32,6 @@ Ball::Ball(GLfloat posX,GLfloat posY,GLfloat posZ, GLfloat ballRadius,GLfloat ba
 /* Bouncing ball effect */
 void Ball::update() {
     
-    GLfloat GREEN[] = {0, 1, 0};
-    
-    
     y += direction * 0.1;
     if (y > maximumHeight) {
         y = maximumHeight;

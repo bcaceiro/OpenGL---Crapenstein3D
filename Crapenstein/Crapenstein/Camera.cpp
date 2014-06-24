@@ -2,7 +2,6 @@
 #include <cmath>
 #include "OpenGLIncludes.h"
 #include "Camera.h"
-#include "mapLimits.h"
 #include "collidingObject.h"
 
 const float limit = 89.0 * M_PI / 180.0;

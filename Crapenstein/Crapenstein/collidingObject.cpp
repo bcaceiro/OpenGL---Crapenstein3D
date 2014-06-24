@@ -1,3 +1,6 @@
+#ifndef COLLIDINGOBJECT_CPP
+#define COLLIDINGOBJECT_CPP
+
 #include <stdio.h>
 #include "collidingObject.h"
 
@@ -28,3 +31,5 @@ bool CollidingObject::isColliding(CollidingObject* obj){
     printf("Not implemented!\n");
     return false;
 }
+
+#endif

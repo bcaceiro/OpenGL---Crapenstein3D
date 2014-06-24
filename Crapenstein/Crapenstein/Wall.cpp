@@ -6,7 +6,6 @@
 #include "Wall.h"
 #include "OpenGLIncludes.h"
 
-extern GLuint texture[4];
 //constructor
 Wall::Wall(float x,float y,float z,float width,float height,int orientation){
     //fazer cenas, dá jeito!

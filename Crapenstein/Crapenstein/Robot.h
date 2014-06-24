@@ -13,9 +13,12 @@
 #include "OpenGLIncludes.h"
 #include "Camera.h"
 #include <vector>
+#include "collidingObject.h"
 
 using namespace std;
 extern vector<CollidingObject*> collidableObjects;
+extern vector<CollidingObject*>::iterator collidableObjectsIterator;
+
 
 class Robot : public CollidingObject
 {

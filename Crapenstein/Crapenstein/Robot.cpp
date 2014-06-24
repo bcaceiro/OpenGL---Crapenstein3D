@@ -15,6 +15,7 @@
 #include "Robot.h"
 #include "Camera.h"
 #include "OpenGLIncludes.h"
+#include "collidingObject.h"
 
 
 //Constructor

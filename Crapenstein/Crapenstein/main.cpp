@@ -11,27 +11,21 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <cstring>
 #include "Camera.h"
 #include "Room.h"
 #include "Wall.h"
 #include "Robot.h"
 #include "Ball.h"
 #include "RgbImage.h"
-#include "mapLimits.h"
 #include "collidingObject.h"
 #include "torch.h"
 
-
-
-
-#define AZUL 0.0, 0.0, 1.0, 1.0
-#define VERMELHO 1.0, 0.0, 0.0, 1.0
-#define VERDE 0.0, 1.0, 0.0, 1.0
-#define BRANCO 1.0, 1.0, 1.0, 1.0
-#define BLACK 0.0, 0.0, 0.0, 1.0
-
-
 using namespace std;
+
+vector<CollidingObject*> collidableObjects;
+vector<CollidingObject*>::iterator collidableObjectsIterator;
+GLuint  texture[4];
 
 void Display();
 void Reshape (int w, int h);
@@ -40,9 +34,6 @@ void Timer(int value);
 void Idle();
 
 Camera* camera;
-
-vector<CollidingObject*> collidableObjects;
-vector<CollidingObject*>::iterator collidableObjectsIterator;
 
 bool keyStates[256] = {false};
 bool specialKeyStates[256] = {false};
@@ -97,15 +88,6 @@ Wall* chao;
 Ball * bola1;
 Ball * bola2;
 //--------------------------------- Definir cores
-#define BLUE     0.0, 0.0, 1.0, 1.0
-#define RED      1.0, 0.0, 0.0, 1.0
-#define YELLOW  1.0, 1.0, 0.0, 1.0
-#define GREEN    0.0, 1.0, 0.0, 1.0
-#define ORANGE   1.0, 0.5, 0.1, 1.0
-#define WHITE    1.0, 1.0, 1.0, 1.0
-#define BLACK    0.0, 0.0, 0.0, 1.0
-#define GRAY     0.9, 0.92, 0.29, 1.0
-#define PI		 3.14159
 
 
 //================================================================================
@@ -140,7 +122,6 @@ GLint    msec=10;					//.. definicao do timer (actualizacao)
 //=========================================================================== INIT
 
 //------------------------------------------------------------ Texturas
-GLuint  texture[4];
 GLuint  tex;
 RgbImage imag;
 
@@ -154,41 +135,6 @@ GLfloat robotY = 2;
 
 
 void drawScene(){
-
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Mesa
-    
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D,texture[0]);
-        glPushMatrix();
-                glTranslatef( 4, 5, 5);
-                glRotatef (       90, -1, 0, 0);
-                GLUquadricObj*  y = gluNewQuadric ( );
-                gluQuadricDrawStyle ( y, GLU_FILL   );
-                gluQuadricNormals   ( y, GLU_SMOOTH );
-                gluQuadricTexture   ( y, GL_TRUE    );
-                glutSolidCube(1.5);
-                //gluSphere ( y, 0.5*mesa, 150, 150);
-
-                gluDeleteQuadric ( y );
-        glPopMatrix();
-        glDisable(GL_TEXTURE_2D);
-
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
-        /*glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D,texture[1]);
-        glPushMatrix();
-                glBegin(GL_QUADS);
-                        glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0 );
-                        glTexCoord2f(10.0f,0.0f); glVertex3i( xC, 0, 0 );
-                        glTexCoord2f(10.0f,10.0f); glVertex3i( xC, 0, xC);
-                        glTexCoord2f(0.0f,10.0f); glVertex3i( 0,  0,  xC);
-                glEnd();
-        glPopMatrix();
-        glDisable(GL_TEXTURE_2D);*/
-
-        //glMatrixMode(GL_MODELVIEW);
-    /* LUZES */
-  
 
     room1->update();
     room2->update();
@@ -233,8 +179,6 @@ void drawScene(){
 
 
 }
-
-
 
 void criaDefineTexturas()
 {
@@ -334,9 +278,6 @@ void initializeObjects() {
     
 }
 
-
-
-
 int main (int argc, char **argv) {
     
     glutInit(&argc, argv);
@@ -415,20 +356,45 @@ int main (int argc, char **argv) {
 void Display (void) {
     glClearColor (0.0,0.0,0.0,1.0); //clear the screen to black
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
-    glLoadIdentity();
+    //glLoadIdentity();
 
-    camera->Refresh();
+    glViewport (0, 0, g_viewport_width/4, g_viewport_height/4);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(-50,50,-50,50,-50,50);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        float a,b,c;
+        camera->GetPos(a,b,c);
+        float q,w,e;
+        camera->GetDirectionVector(q,w,e);
+        gluLookAt(a, 0, c, a, -5, c, q, 0, e);
+        glPushMatrix();
 
-    glColor3f(0,1,0);
+        glClear( GL_COLOR_BUFFER_BIT);
+         glColor3f(1.0, 0.0, 0.0);
+         glBegin(GL_POLYGON);
+          glVertex3f(a-100, -0.1, c-100);
+          glVertex3f(a+100, -0.1, c-100);
+          glVertex3f(a+100, -0.1, c+100);
+          glVertex3f(a-100, -0.1, c+100);
+         glEnd();
+        glPopMatrix();
 
-    //glutSolidTeapot(0.5);
-    //glutWireTeapot(0.5);
+    drawScene();
+
+    glViewport (0, 0, (GLsizei)g_viewport_width , (GLsizei)g_viewport_height); //set the viewport to the current window specifications
+        glMatrixMode (GL_PROJECTION); //set the matrix to projection
+        glLoadIdentity();
+        gluPerspective (60, (GLfloat)g_viewport_width / (GLfloat)g_viewport_height, 0.1 , 1000.0); //set the perspective (angle of sight, width, height, ,depth)
+        camera->Refresh();
     drawScene();
 
     glutSwapBuffers(); //swap the buffers
 }
 
 void Reshape (int w, int h) {
+    //printf("reshape!!!!\n");
     g_viewport_width = w;
     g_viewport_height = h;
 
@@ -436,7 +402,7 @@ void Reshape (int w, int h) {
     glMatrixMode (GL_PROJECTION); //set the matrix to projection
 
     glLoadIdentity ();
-    gluPerspective (60, (GLfloat)w / (GLfloat)h, 0.1 , 100.0); //set the perspective (angle of sight, width, height, ,depth)
+    gluPerspective (60, (GLfloat)w / (GLfloat)h, 0.1 , 1000.0); //set the perspective (angle of sight, width, height, ,depth)
     glMatrixMode (GL_MODELVIEW); //set the matrix back to model
 }
 
@@ -486,11 +452,6 @@ void Keyboard(unsigned char key, int x, int y)
     if(key == 27) {
         exit(0);
     }
-   
-    
-
-    
-
     if(key == ' ') {
         g_fps_mode = !g_fps_mode;
 
@@ -510,12 +471,12 @@ void Keyboard(unsigned char key, int x, int y)
         g_shift_down = false;
     }
 
-    keyStates[key] = true;
+    keyStates[tolower(key)] = true;
 }
 
 void KeyboardUp(unsigned char key, int x, int y)
 {
-    keyStates[key] = false;
+    keyStates[tolower(key)] = false;
 }
 
 void specialkeypressed(int key, int x, int y)

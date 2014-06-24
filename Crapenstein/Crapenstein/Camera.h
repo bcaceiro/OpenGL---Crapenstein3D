@@ -1,5 +1,7 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
+
+#include "OpenGLIncludes.h"
 #include "collidingObject.h"
 /*
 Generic camera class by Nghia Ho
