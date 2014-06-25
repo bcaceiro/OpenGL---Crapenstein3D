@@ -65,6 +65,7 @@ Robot* robotFofinho;
 Cube* cuboTeste;
 Cube* cuboTeste2;
 Cube* cuboTeste3;
+Cube* teste123;
 
 Ball * bola1;
 Ball * bola2;
@@ -88,8 +89,6 @@ bool isPaused = false;
 void drawCube(float angle) {
     
     
-    glPushMatrix();
-    glTranslatef(20,10,10);
     
 	glDisable(GL_TEXTURE_2D);
 	
@@ -163,7 +162,7 @@ void drawCube(float angle) {
 	glEnd();
 	
 	glPopMatrix();
-    glPopMatrix();
+
 }
 
 //Draws the floor
@@ -221,6 +220,8 @@ void drawScene() {
     
 
 	glPushMatrix();
+        glTranslatef(20,10,10);
+
     	drawCube(angle);
 	glPopMatrix();
     
@@ -243,10 +244,13 @@ void drawScene() {
 	
 	//Draw the cube, reflected vertically, at all pixels where the stencil
 	//buffer is 1
+    
 	glPushMatrix();
+    glTranslatef(10, -5, 10);
 	glScalef(1, -1, 1);
 	drawCube(angle);
-	glPopMatrix();
+    
+    glPopMatrix();
 	
 	glDisable(GL_STENCIL_TEST); //Disable using the stencil buffer
 	
@@ -375,7 +379,8 @@ void initializeObjects() {
     cuboTeste = new Cube(30,2,25,2,0.25, 1.0f,0.0f,0.0f);
     cuboTeste2 = new Cube(40,2,25,2,0.25, 0.0f,1.0f,0.0f);
     cuboTeste3 = new Cube(50,2,25,2,0.25, 0.0f,0.0f,1.0f);
-
+    
+    teste123 = new Cube(0,0,0,2,0.25, 0.0f,0.0f,1.0f);
 
     //set Robot Bounds FIXME move inside the robot class
     robotFofinho->setBounds(8,5,3,1.3,1.3,5);
@@ -453,15 +458,6 @@ int main (int argc, char **argv) {
     glLightf(GL_LIGHT1,GL_SPOT_EXPONENT,			1);
     
     
-    
-    glEnable(GL_DEPTH_TEST);
-
-
-
-
-
-
-    
 
     glutIgnoreKeyRepeat(1);
     glutDisplayFunc(Display);
@@ -535,11 +531,6 @@ void Display (void) {
     
         drawScene();
     
-    
-
-
-
-
 
     glViewport (0, 0, (GLsizei)g_viewport_width , (GLsizei)g_viewport_height); //set the viewport to the current window specifications
         glMatrixMode (GL_PROJECTION); //set the matrix to projection
@@ -562,11 +553,13 @@ void Display (void) {
         gluLookAt(5, 5, 5, 0, 0, 0, 0 , 1, 0);
         glPushMatrix();
         
-        glClear( GL_COLOR_BUFFER_BIT);
-        
         glPopMatrix();
+        
+
         glColor4f(1.0, 1.0, 1.0,1.0);
+        
         desenhaTexto(paused, 1, 1, 1);
+
         
     }
 
@@ -589,7 +582,7 @@ void Reshape (int w, int h) {
 
 void Timer(int value)
 {
-    if(g_fps_mode){
+    if(g_fps_mode && !isPaused){
         if(keyStates['w'] || specialKeyStates[GLUT_KEY_UP]) {
             robotFofinho->Move(g_translation_speed);
 

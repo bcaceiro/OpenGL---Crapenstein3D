@@ -67,7 +67,7 @@ Map::Map() {
     doorRoom4 = new DoorWall(100,0,50,100,15,1);
     doorRoom5 = new DoorWall(300,0,0,50,15,2);
     doorRoom6 = new DoorWall(300,0,0,100,15,1);
-    doorRoom8 = new DoorWall(300,0,50,100,15,2);
+    doorRoom8 = new DoorWall(300,0,50,100,15,1);
     doorRoom9 = new DoorWall(400,0,0,50,15,2);
     
     collidableObjects.push_back(doorRoom1);
