@@ -38,7 +38,7 @@ void Reshape (int w, int h);
 void Timer(int value);
 void Idle();
 void initFog();
-
+void desenhaTexto(char *string, GLfloat x, GLfloat y, GLfloat z);
 Camera* camera;
 vector<CollidingObject*> collidableObjects;
 vector<CollidingObject*>::iterator collidableObjectsIterator;
@@ -66,9 +66,15 @@ Cube* cuboTeste3;
 Ball * bola1;
 Ball * bola2;
 
+
+char     texto[30];
+
 bool openDoor = false;
 
 void drawScene() { 
+    
+    
+
     
     /* Update Map */
     map->update();
@@ -77,6 +83,10 @@ void drawScene() {
     robotFofinho->drawRobot();
     bola1->update();
     bola2->update();
+    
+    glColor3f(1,0,0);
+
+
     
     
     
@@ -109,6 +119,9 @@ void drawScene() {
                 glVertex3i( 0, 0, 0);
                 glVertex3i( 0, 0,100);
         glEnd();
+    
+    
+    
 
 
 }
@@ -203,6 +216,15 @@ void initFog(void){
 	glFogf (GL_FOG_DENSITY, 0.5);
 }
 
+void desenhaTexto(char *string, GLfloat x, GLfloat y, GLfloat z) {
+	glRasterPos3f(x,y,z);
+	while(*string)
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, *string++);
+}
+
+
+
+
 int main (int argc, char **argv) {
     
     glutInit(&argc, argv);
@@ -222,7 +244,7 @@ int main (int argc, char **argv) {
     initializeObjects();
 
     Torch* huehuehue = new Torch();
-    
+        sprintf(texto, "Bruno Caceiro | David Cardoso");
 
     /* LIGHTS */
     glEnable(GL_LIGHTING);
@@ -270,6 +292,28 @@ void Display (void) {
     glClearColor (0.0,0.0,0.0,1.0); //clear the screen to black
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
     //glLoadIdentity();
+    
+    
+    
+    glViewport(g_viewport_width/2 + g_viewport_width/6 ,0,g_viewport_width/2 , g_viewport_height/5);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-20,20,-20,20,-20,20);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    
+    gluLookAt(1, 1, 1, 0, 0, 0, 0, 1, 0);
+    glPushMatrix();
+    
+    glClear( GL_COLOR_BUFFER_BIT);
+
+    glPopMatrix();
+    desenhaTexto(texto, -15, -15, 0);
+    
+
+    
+    
+
 
     glViewport (0, 0, g_viewport_width/4, g_viewport_height/4);
         glMatrixMode(GL_PROJECTION);
@@ -293,8 +337,14 @@ void Display (void) {
           glVertex3f(a-100, -0.1, c+100);
          glEnd();
         glPopMatrix();
+    
+        drawScene();
+    
+    
 
-    drawScene();
+
+
+
 
     glViewport (0, 0, (GLsizei)g_viewport_width , (GLsizei)g_viewport_height); //set the viewport to the current window specifications
         glMatrixMode (GL_PROJECTION); //set the matrix to projection
@@ -302,6 +352,8 @@ void Display (void) {
         gluPerspective (60, (GLfloat)g_viewport_width / (GLfloat)g_viewport_height, 0.1 , 1000.0); //set the perspective (angle of sight, width, height, ,depth)
         camera->Refresh();
     drawScene();
+
+
 
     glutSwapBuffers(); //swap the buffers
 }
