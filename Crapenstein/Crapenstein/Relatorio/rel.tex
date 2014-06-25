@@ -95,7 +95,7 @@ Bruno \textsc{Caceiro}  \\Número: 2008107991
 
 
 \section{Introdução}
-\emph{Crapenstein} é um jogo FPS onde o jogador se desloca num mundo e pode disparar lasers para acertar em objetos.
+\emph{Crapenstein} é um jogo \emph{3rd Person Shooter} onde o jogador se desloca num mundo e pode disparar lasers para acertar em objetos. O utilizador pode deslocar a câmara com o rato, e avançar com as teclas W,A,S,D. Para atirar os "lasers" terá de clicar com o botão direito do rato. Para abrir as portas do mapa, utilize a tecla P.
 
 
 \section{Viewport}
@@ -103,23 +103,25 @@ No nosso projeto utilizámos 4 diferentes \emph{Viewports}:
 \begin{itemize}
 	\item Pausa
 	\item Mini-Mapa
-	\item Nomes
+	\item Créditos
 	\item Mapa principal
 \end{itemize}
+A utilização destes \emph{viewports} permite-nos ter simultâneamente no espaço de visualização o jogo do ponto de vista do Robot e de um ponto de vista aéreo. 
 
 \section{Iluminação}
-No nosso jogo temos 8 luzes diferentes, uma ambiente e outras 7 personalizadas, devido à limitação do \emph{OpenGL}. 
+No nosso jogo temos 8 luzes diferentes, uma ambiente e outras 7 personalizadas, devido à limitação do \emph{OpenGL}.  Para os lasers do robot são utilizadas quatro luzes difusas e especulares. Outra luz é utilizada para simular uma lanterna, através de uma luz do tipo \emph{Spotlight}. Temos ainda duas luzes difusas no início do mapa.
 
 \section{Colisões}
-Para as colisões definimos uma \emph{bounding box} a envolver cada objecto (paredes, portas,..). Seguidamente colocamos todos os objectos que têm colisões num array e testamos a colisão. Verificamos o x, y, z dos objectos em relação ao jogador.
+Para as colisões definimos uma \emph{bounding box} a envolver cada objecto (paredes, portas,..). Seguidamente colocamos todos os objectos que têm colisões num array e testamos a colisão. Verificamos o x, y, z dos objectos para verificar se eles colidem.
+
 \section{Texturas}
-As texturas são aplicadas no mapa do jogo, mais concretamente nas portas, chão, paredes e na \emph{SkyBox}. Tivemos um cuidado especial ao fazer \emph{load} das texturas, utilizando o \emph{GL\_MODULATE} para ter em conta a cor dos vértices e da textura, de forma a permitir os efeitos de iluminação desejados.
+As texturas são aplicadas no mapa do jogo, mais concretamente nas portas, chão, paredes e na \emph{SkyBox}. Tivemos um cuidado especial ao fazer \emph{load} das texturas, utilizando o \emph{GL\_MODULATE} para ter em conta a cor dos vértices e da textura, de forma a permitir os efeitos de iluminação desejados. No caso da \emph{SkyBox} foi utilizado o \emph{GL\_DECAL} para que não fosse afectada pelos efeitos de luz.
 
 \section{Transparências}
-Para implementar as transparências criámos uma classe \emph{Cube}, que desenha um cubo transparente, recorrendo à função \emph{BLEND}, da cor pretendida. Tivemos especial atenção em desenhar estes objetos no fim dos objectos opacos.   
+Para implementar as transparências criámos uma classe \emph{Cube}, que desenha um cubo transparente, recorrendo à função \emph{BLEND}, da cor pretendida. Tivemos especial atenção em desenhar estes objetos após os objectos opacos.   
 
 \section{Nevoeiro}
-Para implementar o nevoeiro recorremos às funções do \emph{OpenGL} (\emph{glFog}),onde definimos o tipo de equação do nevoeiro (linear), a densidade do nevoeiro e a distância onde termina o efeito. Este nevoeiro é ativo quando o jogador entra na última sala do jogo.
+Para implementar o nevoeiro recorremos às funções do \emph{OpenGL} (\emph{glFog}), onde definimos o tipo de equação do nevoeiro (linear), a sua densidade e a distância onde termina o efeito. Este nevoeiro é ativo quando o jogador entra na última sala do jogo.
 
 
 \end{document}

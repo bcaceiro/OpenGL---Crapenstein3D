@@ -198,6 +198,17 @@ void drawScene() {
     GLfloat ambientLight[4] = {0.4,0.4,0.4,1.0};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
+    glEnable(GL_LIGHT0);
+    GLfloat lightPos[4] = {1, 1, 1, 1.0};
+
+    glLightfv(GL_LIGHT0,GL_POSITION, lightPos);
+    GLfloat lightColor[4] = {255,0,0,1};
+    glLightfv(GL_LIGHT0,GL_DIFFUSE, lightColor);
+    glLightfv(GL_LIGHT0,GL_SPECULAR, lightColor);
+    glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION,	1);
+    glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION,		0.5);
+    glLightf(GL_LIGHT0,GL_QUADRATIC_ATTENUATION,	0.5);
+
     //draw Skybox
     //glDisable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
@@ -231,6 +242,7 @@ void drawScene() {
         glDisable(GL_FOG);
 
     cuboTeste->draw();
+    huehuehue->draw();
 }
 
 
@@ -310,7 +322,7 @@ void initializeObjects() {
 
     camera = new Camera();
 
-    huehuehue = new Torch(GL_LIGHT1,0,1,50);
+    huehuehue = new Torch(GL_LIGHT1,1,1,50);
 
 
     map    = new Map();
