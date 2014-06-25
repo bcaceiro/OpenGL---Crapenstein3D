@@ -28,7 +28,7 @@ DoorWall::DoorWall(float x,float y,float z,float width,float height,int orientat
     doorState = 0;
     aux = 0;
     
-    if(orientation==1)
+    if(orientation == 1)
         setBounds(x-0.5,y,z-0.5,width,height,2.5);
     else if(orientation==2)
         setBounds(x,y,z,1.0,height,width);
@@ -40,7 +40,7 @@ DoorWall::DoorWall(float x,float y,float z,float width,float height,int orientat
   }
 void DoorWall::updateWalls() {
 
-    //caso seja parede alinhada no x
+    // X oriented Wall
 
     if(orientation == 1) {
         glEnable(GL_TEXTURE_2D);
@@ -66,10 +66,10 @@ void DoorWall::updateWalls() {
             glEnd();
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
-        //printf("acabou a merda\n");
+
     }
 
-    
+    // Z oriented Wall
     if(orientation == 2) {
         // Left Side Wall
         glEnable(GL_TEXTURE_2D);
@@ -104,7 +104,7 @@ void DoorWall::updateWalls() {
 
 
 void DoorWall:: updateDoors() {
-
+    //Door Still
     if( doorState == 0)
         aux = 0;
     
@@ -154,7 +154,6 @@ void DoorWall:: updateDoors() {
     }
     
     
-
     if(orientation == 2) {
     // Left Door
     glEnable(GL_TEXTURE_2D);
@@ -192,21 +191,19 @@ void DoorWall::update() {
     updateWalls();
     updateDoors();
     
-    
 }
 
 void DoorWall::openDoor() {
     if(playerColliding) {
 
-    if(doorState == 1) {
-        doorState = 2;
+        if(doorState == 1) {
+            doorState = 2;
+        }
+        else if(doorState == 0) {
+            doorState = 1;
+            aux = 0.3;
+        }
     }
-    else if(doorState == 0) {
-        doorState = 1;
-        aux = 0.3;
-    }
-    }
-
 }
 
 

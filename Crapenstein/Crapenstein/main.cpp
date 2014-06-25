@@ -55,13 +55,6 @@ int g_viewport_width = 0;
 int g_viewport_height = 0;
 
 Map* map;
-DoorWall* doorRoom1;
-DoorWall* doorRoom2;
-DoorWall* doorRoom4;
-DoorWall* doorRoom5;
-DoorWall* doorRoom6;
-DoorWall* doorRoom8;
-DoorWall* doorRoom9;
 
 Robot* robotFofinho;
 
@@ -75,26 +68,15 @@ Ball * bola2;
 
 bool openDoor = false;
 
-void drawScene(){
+void drawScene() { 
     
-
-
+    /* Update Map */
     map->update();
-    doorRoom1->update();
 
-    doorRoom2->update();
-
-    doorRoom4->update();
-    doorRoom5->update();
-    doorRoom6->update();
-    doorRoom8->update();
-    doorRoom9->update();
-
-
-        /* merdas robot */
-        robotFofinho->drawRobot();
-        bola1->update();
-        bola2->update();
+    /* Update Robot */
+    robotFofinho->drawRobot();
+    bola1->update();
+    bola2->update();
     
     
     
@@ -192,19 +174,7 @@ void initializeObjects() {
     
 
     camera = new Camera();
-//    initFog();
-  //  glEnable(GL_FOG);
-
-    map = new Map();
-    doorRoom1 = new DoorWall(100,0,0,50,15,2);
-    doorRoom2 = new DoorWall(100,0,0,100,15,1);
-    doorRoom4 = new DoorWall(100,0,50,100,15,1);
-    doorRoom5 = new DoorWall(300,0,0,50,15,2);
-    doorRoom6 = new DoorWall(300,0,0,100,15,1);
-    doorRoom8 = new DoorWall(300,0,50,100,15,2);
-    doorRoom9 = new DoorWall(400,0,0,50,15,2);
-
-
+    map    = new Map();
 
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
@@ -240,16 +210,8 @@ int main (int argc, char **argv) {
     glutInitWindowSize(wScreen, hScreen);
     glutCreateWindow("CGenstein");
 
-    //initialize the container of the collidableObjects
+    // Initialize the container of the collidableObjects
     collidableObjects.clear();
-
-    //collidableObjects.push_back(huehuehue);
-    /*float cenas1,cenas2,cenas3;
-    unsigned int vector_size = collidableObjects.size();
-    for(unsigned int i = 0; i < vector_size; ++i){
-        ((CollidingObject*)collidableObjects[i])->setBounds(0.0,0.0,0.0,0.0,0.0);
-        ((CollidingObject*)collidableObjects[i])->isColliding(cenas1,cenas2,cenas3);
-    }*/
 
     glClearColor(BLACK);
     glShadeModel(GL_SMOOTH);
@@ -260,24 +222,9 @@ int main (int argc, char **argv) {
     initializeObjects();
 
     Torch* huehuehue = new Torch();
-    /*collidableObjects.push_back(parede1);
-    collidableObjects.push_back(parede2);
-    collidableObjects.push_back(parede3);
-    collidableObjects.push_back(parede4);
-    collidableObjects.push_back(chao);*/
-
-    
-    collidableObjects.push_back(doorRoom1);
-        collidableObjects.push_back(doorRoom2);
-        collidableObjects.push_back(doorRoom4);
-        collidableObjects.push_back(doorRoom5);
-    
-    collidableObjects.push_back(doorRoom6);
-    collidableObjects.push_back(doorRoom8);
-            collidableObjects.push_back(doorRoom9);
     
 
-        /* LIGHTS */
+    /* LIGHTS */
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
@@ -425,15 +372,7 @@ void Keyboard(unsigned char key, int x, int y)
 void KeyboardUp(unsigned char key, int x, int y)
 {
     if(key == 'p') {
-        doorRoom1->openDoor();
-
-
-        doorRoom2->openDoor();
-        doorRoom4->openDoor();
-        doorRoom5->openDoor();
-        doorRoom6->openDoor();
-                doorRoom8->openDoor();
-                doorRoom9->openDoor();
+        map->checkOpenDoors();
     }
     
     if(key == 'f')

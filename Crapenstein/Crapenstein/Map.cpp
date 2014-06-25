@@ -11,6 +11,15 @@
 #include <stdio.h>
 #include <assert.h>
 #include "OpenGLIncludes.h"
+#include "DoorWall.h"
+
+
+#include <vector>
+#include "collidingObject.h"
+
+using namespace std;
+extern vector<CollidingObject*> collidableObjects;
+extern vector<CollidingObject*>::iterator collidableObjectsIterator;
 
 /* Map
  
@@ -25,6 +34,7 @@
  */
 
 Map::Map() {
+    
     room1 = new Room(0,0,0,100,15,50,true,true,true,false);
     room1->buildRoom();
     
@@ -52,12 +62,27 @@ Map::Map() {
     room9 = new Room(400,0,0,100,15,50,true,false,true,true);
     room9->buildRoom();
     
+    doorRoom1 = new DoorWall(100,0,0,50,15,2);
+    doorRoom2 = new DoorWall(100,0,0,100,15,1);
+    doorRoom4 = new DoorWall(100,0,50,100,15,1);
+    doorRoom5 = new DoorWall(300,0,0,50,15,2);
+    doorRoom6 = new DoorWall(300,0,0,100,15,1);
+    doorRoom8 = new DoorWall(300,0,50,100,15,2);
+    doorRoom9 = new DoorWall(400,0,0,50,15,2);
+    
+    collidableObjects.push_back(doorRoom1);
+    collidableObjects.push_back(doorRoom2);
+    collidableObjects.push_back(doorRoom4);
+    collidableObjects.push_back(doorRoom5);
+    collidableObjects.push_back(doorRoom6);
+    collidableObjects.push_back(doorRoom8);
+    collidableObjects.push_back(doorRoom9);
     
 }
 
 void Map::update() {
     
-    this->room1->update();
+    room1->update();
     room2->update();
     room3->update();
     room4->update();
@@ -66,4 +91,25 @@ void Map::update() {
     room7->update();
     room8->update();
     room9->update();
+    
+    doorRoom1->update();
+    doorRoom2->update();
+    doorRoom4->update();
+    doorRoom5->update();
+    doorRoom6->update();
+    doorRoom8->update();
+    doorRoom9->update();
+
+}
+
+void Map:: checkOpenDoors() {
+    
+    doorRoom1->openDoor();
+    doorRoom2->openDoor();
+    doorRoom4->openDoor();
+    doorRoom5->openDoor();
+    doorRoom6->openDoor();
+    doorRoom8->openDoor();
+    doorRoom9->openDoor();
+    
 }
