@@ -28,6 +28,14 @@ DoorWall::DoorWall(float x,float y,float z,float width,float height,int orientat
     doorState = 0;
     aux = 0;
     
+    if(orientation==1)
+        setBounds(x-0.5,y,z-0.5,width,height,2.5);
+    else if(orientation==2)
+        setBounds(x,y,z,1.0,height,width);
+    
+    
+    playerColliding = false;
+    
     
   }
 void DoorWall::updateWalls() {
@@ -188,6 +196,7 @@ void DoorWall::update() {
 }
 
 void DoorWall::openDoor() {
+    if(playerColliding) {
 
     if(doorState == 1) {
         doorState = 2;
@@ -196,8 +205,37 @@ void DoorWall::openDoor() {
         doorState = 1;
         aux = 0.3;
     }
+    }
 
 }
+
+
+bool DoorWall::isColliding(CollidingObject* obj) {
+
+    if(this->orientation!=0)
+        //printf("CollisionTestX(%f,%f,%f,%f)\n",this->collide_minX,obj->collide_maxX,this->collide_maxX,obj->collide_minX);
+    if(this->collide_minX < obj->collide_maxX && this->collide_maxX > obj->collide_minX){
+        if(this->orientation!=0)
+            //printf("CollisionTestY((%f,%f,%f,%f)\n",this->collide_minY,obj->collide_maxY,this->collide_maxY,obj->collide_minY);
+        if(this->collide_minY < obj->collide_maxY && this->collide_maxY > obj->collide_minY){
+            if(this->orientation!=0)
+                //printf("CollisionTestZ((%f,%f,%f,%f)\n",this->collide_minZ,obj->collide_maxZ,this->collide_maxZ,obj->collide_minZ);
+            if(this->collide_minZ < obj->collide_maxZ && this->collide_maxZ > obj->collide_minZ){
+                printf("Colliding(%d)...\n",orientation);
+                playerColliding = true;
+                if(doorState == 1 || doorState == 2)
+                    return false;
+                return true;
+            }
+        }
+    }
+    //printf("Not Colliding...\n");
+    return false;
+}
+
+
+
+
 
 
 

@@ -11,8 +11,9 @@
 
 #include <iostream>
 #include "OpenGLIncludes.h"
+#include "collidingObject.h"
 
-class DoorWall
+class DoorWall: public CollidingObject
 {
 public:
     /**
@@ -33,6 +34,7 @@ public:
     void updateWalls();
     void updateDoors();
     void update();
+    bool isColliding(CollidingObject* obj);
    
     
 private:
@@ -47,6 +49,8 @@ private:
     GLint doorState;
     
     GLfloat aux;
+    
+    bool playerColliding;
 };
 
 #endif // DOORWALL_H

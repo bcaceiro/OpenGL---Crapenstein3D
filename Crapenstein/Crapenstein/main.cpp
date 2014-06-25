@@ -37,6 +37,7 @@ void Display();
 void Reshape (int w, int h);
 void Timer(int value);
 void Idle();
+void initFog();
 
 Camera* camera;
 vector<CollidingObject*> collidableObjects;
@@ -75,6 +76,8 @@ Ball * bola2;
 bool openDoor = false;
 
 void drawScene(){
+    
+
 
     map->update();
     doorRoom1->update();
@@ -92,9 +95,13 @@ void drawScene(){
         robotFofinho->drawRobot();
         bola1->update();
         bola2->update();
-    cuboTeste->draw();
-        cuboTeste2->draw();
-            cuboTeste3->draw();
+    
+    
+    
+
+    //cuboTeste->draw();
+      //  cuboTeste2->draw();
+        //    cuboTeste3->draw();
         /*LUZESSSS*/
         GLfloat lightPos[4] = {5, 5,5, 1.0};
         glLightfv(GL_LIGHT1,GL_POSITION, lightPos);
@@ -183,8 +190,11 @@ void criaDefineTexturas()
 
 void initializeObjects() {
     
+
     camera = new Camera();
-    
+//    initFog();
+  //  glEnable(GL_FOG);
+
     map = new Map();
     doorRoom1 = new DoorWall(100,0,0,50,15,2);
 
@@ -214,6 +224,15 @@ void initializeObjects() {
     
     
     
+}
+
+void initFog(void){
+    GLfloat nevoeiroCor[] = {0.75, 0.75, 0.75, 1.0};
+    glFogfv(GL_FOG_COLOR,nevoeiroCor);
+	glFogi(GL_FOG_MODE, GL_LINEAR); //Equao do nevoeiro - linear
+	glFogf(GL_FOG_START, 1); // Distncia a que ter incio o nevoeiro
+	glFogf(GL_FOG_END, 30); // Distncia a que o nevoeiro terminar
+	glFogf (GL_FOG_DENSITY, 0.5);
 }
 
 int main (int argc, char **argv) {
@@ -248,6 +267,17 @@ int main (int argc, char **argv) {
     collidableObjects.push_back(parede3);
     collidableObjects.push_back(parede4);
     collidableObjects.push_back(chao);*/
+
+    
+    collidableObjects.push_back(doorRoom1);
+        collidableObjects.push_back(doorRoom2);
+        collidableObjects.push_back(doorRoom4);
+        collidableObjects.push_back(doorRoom5);
+    
+    collidableObjects.push_back(doorRoom6);
+    collidableObjects.push_back(doorRoom8);
+            collidableObjects.push_back(doorRoom9);
+    
 
         /* LIGHTS */
     glEnable(GL_LIGHTING);
@@ -407,6 +437,9 @@ void KeyboardUp(unsigned char key, int x, int y)
                 doorRoom8->openDoor();
                 doorRoom9->openDoor();
     }
+    
+    if(key == 'f')
+        initFog();
     
     keyStates[tolower(key)] = false;
 }
