@@ -198,78 +198,6 @@ void drawScene() {
     GLfloat ambientLight[4] = {0.4,0.4,0.4,1.0};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
-
-
-    //glEnable(GL_LIGHT0);
-    /*GLfloat lightPos[4] = {0, 1, 0, 1.0};
-    
-    glLightfv(GL_LIGHT0,GL_POSITION, lightPos);
-    GLfloat lightColor[4] = {255,0,0,1};
-    glLightfv(GL_LIGHT0,GL_DIFFUSE, lightColor);
-    glLightfv(GL_LIGHT0,GL_SPECULAR, lightColor);
-    
-    angle += 1.0f;
-	if (angle > 360) {
-		angle -= 360;
-	}
-    
-    
-    
-
-	glPushMatrix();
-        glTranslatef(20,10,10);
-
-    	drawCube(angle);
-	glPopMatrix();
-    
-
-
-	glEnable(GL_STENCIL_TEST); //Enable using the stencil buffer
-	glColorMask(0, 0, 0, 0); //Disable drawing colors to the screen
-	glDisable(GL_DEPTH_TEST); //Disable depth testing
-	glStencilFunc(GL_ALWAYS, 1, 1); //Make the stencil test always pass
-	//Make pixels in the stencil buffer be set to 1 when the stencil test passes
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	//Set all of the pixels covered by the floor to be 1 in the stencil buffer
-	drawFloor();
-	
-	glColorMask(1, 1, 1, 1); //Enable drawing colors to the screen
-	glEnable(GL_DEPTH_TEST); //Enable depth testing
-	//Make the stencil test pass only when the pixel is 1 in the stencil buffer
-	glStencilFunc(GL_EQUAL, 1, 1);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); //Make the stencil buffer not change
-	
-	//Draw the cube, reflected vertically, at all pixels where the stencil
-	//buffer is 1
-    
-	glPushMatrix();
-    glTranslatef(10, -5, 10);
-	glScalef(1, -1, 1);
-	drawCube(angle);
-    
-    glPopMatrix();
-	
-	glDisable(GL_STENCIL_TEST); //Disable using the stencil buffer
-	
-	//Blend the floor onto the screen
-	glEnable(GL_BLEND);
-	glColor4f(1, 1, 1, 0.7f);
-	drawFloor();
-	glDisable(GL_BLEND);
-    
-    
-    
-
-    
-    
-    
-
-    glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION,	1);
-    glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION,		0.5);
-    glLightf(GL_LIGHT0,GL_QUADRATIC_ATTENUATION,	0.5);
-    //glLightf(GL_LIGHT1,GL_SPOT_CUTOFF,				0.5);
-    //glLightf(GL_LIGHT1,GL_SPOT_EXPONENT,			1);
-*/
     //draw Skybox
     //glDisable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
@@ -301,6 +229,8 @@ void drawScene() {
         glEnable(GL_FOG);
     else
         glDisable(GL_FOG);
+
+    cuboTeste->draw();
 }
 
 
@@ -390,11 +320,11 @@ void initializeObjects() {
     robotFofinho = new Robot(8,5,3,1.3,camera);
     
     cuboTeste = new Cube(30,2,25,2,0.25, 1.0f,0.0f,0.0f);
-    cuboTeste2 = new Cube(40,2,25,2,0.25, 0.0f,1.0f,0.0f);
+    /*cuboTeste2 = new Cube(40,2,25,2,0.25, 0.0f,1.0f,0.0f);
     cuboTeste3 = new Cube(50,2,25,2,0.25, 0.0f,0.0f,1.0f);
     
     teste123 = new Cube(0,0,0,2,0.25, 0.0f,0.0f,1.0f);
-
+*/
     //set Robot Bounds FIXME move inside the robot class
     robotFofinho->setBounds(8,5,3,1.3,1.3,5);
     //set the camera to have the bounds of the robot
