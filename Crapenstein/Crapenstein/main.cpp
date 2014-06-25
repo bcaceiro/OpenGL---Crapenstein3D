@@ -632,6 +632,7 @@ void Keyboard(unsigned char key, int x, int y)
 void KeyboardUp(unsigned char key, int x, int y)
 {
     if(key == 'p') {
+        //printf("sdhjcfhsdnfvjhdbfk hjsdnrgtsdhj\n");
         map->checkOpenDoors();
     }
     

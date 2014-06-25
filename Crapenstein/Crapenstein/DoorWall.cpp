@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "OpenGLIncludes.h"
-#include "materiais.h"
+//#include "materiais.h"
 #include <vector>
 #include "collidingObject.h"
 
@@ -78,19 +78,11 @@ void DoorWall:: updateDoors() {
         if(z + width / 2 - 10 - aux == z + width / 2 - 10 )
             doorState = 0;
     }
-    
-    glEnable(GL_COLOR_MATERIAL);
-
     if(orientation == 1) {
         // Left Door
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[0]);
         glEnable(GL_COLOR_MATERIAL);
-        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
-        glMaterialfv(GL_FRONT, GL_AMBIENT, esmeraldAmb);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, esmeraldDif);
-        glMaterialfv(GL_BACK, GL_AMBIENT, esmeraldAmb);
-        glMaterialfv(GL_BACK, GL_DIFFUSE, esmeraldDif);
         glPushMatrix();
             glBegin(GL_QUADS);
                 glTexCoord2f(0.0f,0.0f);  glVertex3f( x + width/2-10-aux ,  y,               z);

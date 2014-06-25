@@ -1,5 +1,6 @@
 #ifndef __MATERIAIS__
 #define __MATERIAIS__
+
 GLfloat  esmeraldAmb []={ 0.0215 ,0.1745 ,0.0215 };
 GLfloat  esmeraldDif []={   0.07568 ,0.61424 ,0.07568 };
 GLfloat  esmeraldSpec []={ 0.633 ,0.727811 ,0.633 };
