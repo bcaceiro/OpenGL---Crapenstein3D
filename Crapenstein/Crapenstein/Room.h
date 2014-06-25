@@ -14,6 +14,14 @@
 #include "OpenGLIncludes.h"
 #include "Wall.h"
 
+#include <vector>
+#include "collidingObject.h"
+
+using namespace std;
+extern vector<CollidingObject*> collidableObjects;
+extern vector<CollidingObject*>::iterator collidableObjectsIterator;
+
+
 class Room
 {
 public:
@@ -47,6 +55,7 @@ private:
     bool backWallActive;
     bool rightWallActive;
     bool frontWallActive;
+
 };
 
 inline Room::~Room()

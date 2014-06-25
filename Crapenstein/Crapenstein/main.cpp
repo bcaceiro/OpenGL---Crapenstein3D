@@ -37,6 +37,7 @@ void Display();
 void Reshape (int w, int h);
 void Timer(int value);
 void Idle();
+void initFog();
 
 Camera* camera;
 vector<CollidingObject*> collidableObjects;
@@ -68,8 +69,10 @@ Ball * bola1;
 Ball * bola2;
 Torch* huehuehue;
 
-void drawScene(){
+bool openDoor = false;
 
+void drawScene() { 
+    
 
     /*LUZESSSS*/
     GLfloat ambientLight[4] = {0.1,0.1,0.1,1.0};
@@ -92,14 +95,18 @@ void drawScene(){
 
     huehuehue->draw();
     map->update();
-    testeDoor->draw();
-        /* merdas robot */
-        robotFofinho->drawRobot();
-        bola1->update();
-        bola2->update();
-    cuboTeste->draw();
-        cuboTeste2->draw();
-            cuboTeste3->draw();
+
+    /* Update Robot */
+    robotFofinho->drawRobot();
+    bola1->update();
+    bola2->update();
+    
+    
+    
+
+    //cuboTeste->draw();
+      //  cuboTeste2->draw();
+        //    cuboTeste3->draw();
     
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
         //white = x
@@ -133,7 +140,7 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        imag.LoadBmpFile("assets/mesa.bmp");
+        imag.LoadBmpFile("assets/doorFofa.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
                 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -182,13 +189,13 @@ void criaDefineTexturas()
 
 void initializeObjects() {
     
+
     camera = new Camera();
 
     huehuehue = new Torch(GL_LIGHT0+7,0,1,50);
 
 
-    map = new Map();
-    testeDoor = new DoorWall(100,0,0,50,15,2);
+    map    = new Map();
 
     bola1 =     new Ball(15,5,3,3,8,1);
     bola2 =     new Ball(25,5,10,0.5,9,-1);
@@ -208,6 +215,15 @@ void initializeObjects() {
     
 }
 
+void initFog(void){
+    GLfloat nevoeiroCor[] = {0.75, 0.75, 0.75, 1.0};
+    glFogfv(GL_FOG_COLOR,nevoeiroCor);
+	glFogi(GL_FOG_MODE, GL_LINEAR); //Equao do nevoeiro - linear
+	glFogf(GL_FOG_START, 1); // Distncia a que ter incio o nevoeiro
+	glFogf(GL_FOG_END, 30); // Distncia a que o nevoeiro terminar
+	glFogf (GL_FOG_DENSITY, 0.5);
+}
+
 int main (int argc, char **argv) {
     
     glutInit(&argc, argv);
@@ -215,16 +231,8 @@ int main (int argc, char **argv) {
     glutInitWindowSize(wScreen, hScreen);
     glutCreateWindow("CGenstein");
 
-    //initialize the container of the collidableObjects
+    // Initialize the container of the collidableObjects
     collidableObjects.clear();
-
-    //collidableObjects.push_back(huehuehue);
-    /*float cenas1,cenas2,cenas3;
-    unsigned int vector_size = collidableObjects.size();
-    for(unsigned int i = 0; i < vector_size; ++i){
-        ((CollidingObject*)collidableObjects[i])->setBounds(0.0,0.0,0.0,0.0,0.0);
-        ((CollidingObject*)collidableObjects[i])->isColliding(cenas1,cenas2,cenas3);
-    }*/
 
     glClearColor(BLACK);
     glShadeModel(GL_SMOOTH);
@@ -235,13 +243,9 @@ int main (int argc, char **argv) {
     criaDefineTexturas( );
     initializeObjects();
 
-    /*collidableObjects.push_back(parede1);
-    collidableObjects.push_back(parede2);
-    collidableObjects.push_back(parede3);
-    collidableObjects.push_back(parede4);
-    collidableObjects.push_back(chao);*/
+    
 
-        /* LIGHTS */
+    /* LIGHTS */
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
@@ -335,9 +339,6 @@ void Timer(int value)
             robotFofinho->Strafe(-g_translation_speed);
         }
 
-        if(keyStates['p']) {
-            testeDoor->openDoor();
-        }
     }
     robotFofinho->updateLasers();
     glutTimerFunc(1, Timer, 0);
@@ -353,6 +354,8 @@ void Idle()
 
 void Keyboard(unsigned char key, int x, int y)
 {
+    
+    
     if(key == 27) {
         g_fps_mode = !g_fps_mode;
 
@@ -370,6 +373,13 @@ void Keyboard(unsigned char key, int x, int y)
 
 void KeyboardUp(unsigned char key, int x, int y)
 {
+    if(key == 'p') {
+        map->checkOpenDoors();
+    }
+    
+    if(key == 'f')
+        initFog();
+    
     keyStates[tolower(key)] = false;
 }
 

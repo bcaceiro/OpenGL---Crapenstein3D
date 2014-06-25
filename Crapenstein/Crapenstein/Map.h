@@ -10,6 +10,7 @@
 #define Crapenstein_Map_h
 
 #include "Room.h"
+#include "DoorWall.h"
 
 class Map
 {
@@ -23,6 +24,7 @@ public:
     
     //Methods
     void update();
+    void checkOpenDoors();
     
 private:
     
@@ -35,6 +37,15 @@ private:
     Room* room7;
     Room* room8;
     Room* room9;
+    
+    DoorWall* doorRoom1;
+    DoorWall* doorRoom2;
+    DoorWall* doorRoom4;
+    DoorWall* doorRoom5;
+    DoorWall* doorRoom6;
+    DoorWall* doorRoom8;
+    DoorWall* doorRoom9;
+
 
 };
 
