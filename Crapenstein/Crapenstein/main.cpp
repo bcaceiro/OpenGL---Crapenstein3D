@@ -39,7 +39,7 @@ void Timer(int value);
 void Idle();
 void initFog();
 void desenhaTexto(char *string, GLfloat x, GLfloat y, GLfloat z);
-void Draw_Skybox(float x, float y, float z, float width, float height, float length);
+
 Camera* camera;
 vector<CollidingObject*> collidableObjects;
 vector<CollidingObject*>::iterator collidableObjectsIterator;
@@ -71,18 +71,132 @@ Ball * bola2;
 
 
 char     texto[30];
+char     paused[30];
 
 bool openDoor = false;
+const float BOX_SIZE = 3.0f; //The length of each side of the cube
+const float BOX_HEIGHT = BOX_SIZE; //The height of the box off of the ground
+const float FLOOR_SIZE = 10.0f; //The length of each side of the floor
+
+float angle;
 
 
-void drawScene() { 
+bool isPaused = false;
+
+
+//Draws the cube
+void drawCube(float angle) {
     
     
+    glPushMatrix();
+    glTranslatef(20,10,10);
+    
+	glDisable(GL_TEXTURE_2D);
+	
+	glPushMatrix();
+	glRotatef(-angle, 1.0f, 1.0f, 0.0f);
+	
+	glBegin(GL_QUADS);
+	
+	//Top face
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glNormal3f(0.0, 1.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	
+	//Bottom face
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glNormal3f(0.0, -1.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	
+	//Left face
+	glNormal3f(-1.0, 0.0f, 0.0f);
+	glColor3f(0.0f, 1.0f, 1.0f);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	
+	//Right face
+	glNormal3f(1.0, 0.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	
+	glEnd();
+	
+    
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glBegin(GL_QUADS);
+	
+	//Front face
+	glNormal3f(0.0, 0.0f, 1.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	
+	//Back face
+	glNormal3f(0.0, 0.0f, -1.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	
+	glEnd();
+	
+	glPopMatrix();
+    glPopMatrix();
+}
 
-//            Draw_Skybox(100, 50, 100, 1000, 10, 1000);
+//Draws the floor
+void drawFloor() {
+
+    
+    glPushMatrix();
+    glTranslatef(20,5,10);
+	glBegin(GL_QUADS);
+	
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(-FLOOR_SIZE / 2, 0, FLOOR_SIZE / 2);
+	glTexCoord2f(0, 1);
+	glVertex3f(-FLOOR_SIZE / 2, 0, -FLOOR_SIZE / 2);
+	glTexCoord2f(1, 1);
+	glVertex3f(FLOOR_SIZE / 2, 0, -FLOOR_SIZE / 2);
+	glTexCoord2f(1, 0);
+	glVertex3f(FLOOR_SIZE / 2, 0, FLOOR_SIZE / 2);
+	
+	glEnd();
+        glPopMatrix();
+}
+
+
+void drawScene() {
+    
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    
     /* Update Map */
     map->update();
-
+    
     /* Update Robot */
     robotFofinho->drawRobot();
     bola1->update();
@@ -93,20 +207,61 @@ void drawScene() {
     else
         glDisable(GL_FOG);
     
-
-    
-
-    
-
-
-
-    
-    
-    
-
     //cuboTeste->draw();
-      //  cuboTeste2->draw();
-        //    cuboTeste3->draw();
+    //  cuboTeste2->draw();
+    //    cuboTeste3->draw();
+    
+    
+    angle += 1.0f;
+	if (angle > 360) {
+		angle -= 360;
+	}
+    
+    
+    
+
+	glPushMatrix();
+    	drawCube(angle);
+	glPopMatrix();
+    
+
+
+	glEnable(GL_STENCIL_TEST); //Enable using the stencil buffer
+	glColorMask(0, 0, 0, 0); //Disable drawing colors to the screen
+	glDisable(GL_DEPTH_TEST); //Disable depth testing
+	glStencilFunc(GL_ALWAYS, 1, 1); //Make the stencil test always pass
+	//Make pixels in the stencil buffer be set to 1 when the stencil test passes
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	//Set all of the pixels covered by the floor to be 1 in the stencil buffer
+	drawFloor();
+	
+	glColorMask(1, 1, 1, 1); //Enable drawing colors to the screen
+	glEnable(GL_DEPTH_TEST); //Enable depth testing
+	//Make the stencil test pass only when the pixel is 1 in the stencil buffer
+	glStencilFunc(GL_EQUAL, 1, 1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); //Make the stencil buffer not change
+	
+	//Draw the cube, reflected vertically, at all pixels where the stencil
+	//buffer is 1
+	glPushMatrix();
+	glScalef(1, -1, 1);
+	drawCube(angle);
+	glPopMatrix();
+	
+	glDisable(GL_STENCIL_TEST); //Disable using the stencil buffer
+	
+	//Blend the floor onto the screen
+	glEnable(GL_BLEND);
+	glColor4f(1, 1, 1, 0.7f);
+	drawFloor();
+	glDisable(GL_BLEND);
+    
+    
+    
+
+    
+    
+    
         /*LUZESSSS*/
         GLfloat lightPos[4] = {5, 5,5, 1.0};
         glLightfv(GL_LIGHT1,GL_POSITION, lightPos);
@@ -132,10 +287,6 @@ void drawScene() {
                 glVertex3i( 0, 0, 0);
                 glVertex3i( 0, 0,100);
         glEnd();
-    
-    
-    
-
 
 }
 
@@ -251,74 +402,6 @@ void desenhaTexto(char *string, GLfloat x, GLfloat y, GLfloat z) {
 }
 
 
-/*
-void Draw_Skybox(float x, float y, float z, float width, float height, float length)
-{
-	// Center the Skybox around the given x,y,z position
-	x = x - width  / 2;
-	y = y - height / 2;
-	z = z - length / 2;
-    
-	// Draw Front side
-	glBindTexture(GL_TEXTURE_2D, texture[3]);
-	glBegin(GL_QUADS);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x,		  y,		z+length);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x,		  y+height, z+length);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x+width, y+height, z+length);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x+width, y,		z+length);
-	glEnd();
-    
-	// Draw Back side
-	glBindTexture(GL_TEXTURE_2D, texture[3]);
-	glBegin(GL_QUADS);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x+width, y,		z);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x+width, y+height, z);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x,		  y+height,	z);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x,		  y,		z);
-	glEnd();
-    
-	// Draw Left side
-	glBindTexture(GL_TEXTURE_2D, texture[3]);
-	glBegin(GL_QUADS);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x,		  y+height,	z);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x,		  y+height,	z+length);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x,		  y,		z+length);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x,		  y,		z);
-	glEnd();
-    
-	// Draw Right side
-	glBindTexture(GL_TEXTURE_2D, texture[3]);
-	glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x+width, y,		z);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x+width, y,		z+length);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x+width, y+height,	z+length);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x+width, y+height,	z);
-	glEnd();
-    
-	// Draw Up side
-	glBindTexture(GL_TEXTURE_2D, texture[3]);
-	glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x+width, y+height, z);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x+width, y+height, z+length);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x,		  y+height,	z+length);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x,		  y+height,	z);
-	glEnd();
-    
-	// Draw Down side
-	glBindTexture(GL_TEXTURE_2D, texture[3]);
-	glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x,		  y,		z);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x,		  y,		z+length);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x+width, y,		z+length);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x+width, y,		z);
-	glEnd();
-    
-}
- */
-
-
-
-
 
 
 
@@ -327,7 +410,7 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 int main (int argc, char **argv) {
     
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
     glutInitWindowSize(wScreen, hScreen);
     glutCreateWindow("CGenstein");
 
@@ -344,11 +427,13 @@ int main (int argc, char **argv) {
 
     Torch* huehuehue = new Torch();
         sprintf(texto, "Bruno Caceiro | David Cardoso");
+            sprintf(paused, "Paused");
 
     /* LIGHTS */
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     GLfloat ambientLight[4] = {0.85,0.85,0.85,1.0};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
@@ -366,6 +451,15 @@ int main (int argc, char **argv) {
     glLightf(GL_LIGHT1,GL_QUADRATIC_ATTENUATION,	0.5);
     glLightf(GL_LIGHT1,GL_SPOT_CUTOFF,				0.5);
     glLightf(GL_LIGHT1,GL_SPOT_EXPONENT,			1);
+    
+    
+    
+    glEnable(GL_DEPTH_TEST);
+
+
+
+
+
 
     
 
@@ -388,12 +482,14 @@ int main (int argc, char **argv) {
 }
 
 void Display (void) {
+    
     glClearColor (0.0,0.0,0.0,1.0); //clear the screen to black
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
     //glLoadIdentity();
     
     
-    
+    if(!isPaused) {
+                glEnable(GL_LIGHTING);
     glViewport(g_viewport_width/2 + g_viewport_width/6 ,0,g_viewport_width/2 , g_viewport_height/5);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -451,7 +547,28 @@ void Display (void) {
         gluPerspective (60, (GLfloat)g_viewport_width / (GLfloat)g_viewport_height, 0.1 , 1000.0); //set the perspective (angle of sight, width, height, ,depth)
         camera->Refresh();
     drawScene();
-
+    }
+    
+    else {
+        
+        glDisable(GL_LIGHTING);
+        glViewport(0,0,g_viewport_width, g_viewport_height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(-20,20,-20,20,-20,20);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        
+        gluLookAt(5, 5, 5, 0, 0, 0, 0 , 1, 0);
+        glPushMatrix();
+        
+        glClear( GL_COLOR_BUFFER_BIT);
+        
+        glPopMatrix();
+        glColor4f(1.0, 1.0, 1.0,1.0);
+        desenhaTexto(paused, 1, 1, 1);
+        
+    }
 
 
     glutSwapBuffers(); //swap the buffers
@@ -528,6 +645,9 @@ void KeyboardUp(unsigned char key, int x, int y)
     
     if(key == 'f')
         initFog();
+    
+    if(key == 'b')
+        isPaused = !isPaused;
     
     keyStates[tolower(key)] = false;
 }
