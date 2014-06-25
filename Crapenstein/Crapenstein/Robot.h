@@ -45,9 +45,10 @@ public:
     void RotatePitch(float angle);
     void Move(float incr);
     void Strafe(float incr);
+        GLfloat posX;
     
 private:
-    GLfloat posX;
+
     GLfloat posY;
     GLfloat posZ;
     GLfloat torsoRadius;

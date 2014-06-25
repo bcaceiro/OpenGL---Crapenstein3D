@@ -39,10 +39,13 @@ void Timer(int value);
 void Idle();
 void initFog();
 void desenhaTexto(char *string, GLfloat x, GLfloat y, GLfloat z);
+void Draw_Skybox(float x, float y, float z, float width, float height, float length);
 Camera* camera;
 vector<CollidingObject*> collidableObjects;
 vector<CollidingObject*>::iterator collidableObjectsIterator;
 GLuint  texture[5];
+
+bool enableFog = false;
 
 GLint wScreen=800, hScreen=600;
 bool keyStates[256] = {false};
@@ -71,11 +74,12 @@ char     texto[30];
 
 bool openDoor = false;
 
+
 void drawScene() { 
     
     
 
-    
+//            Draw_Skybox(100, 50, 100, 1000, 10, 1000);
     /* Update Map */
     map->update();
 
@@ -84,9 +88,16 @@ void drawScene() {
     bola1->update();
     bola2->update();
     
-    Draw_Skybox(100, 50, 100, 1000, 10, 1000);
+    if(robotFofinho->posX > 390)
+        glEnable(GL_FOG);
+    else
+        glDisable(GL_FOG);
     
-    glColor3f(1,0,0);
+
+    
+
+    
+
 
 
     
@@ -127,6 +138,8 @@ void drawScene() {
 
 
 }
+
+
 
 void criaDefineTexturas()
 {
@@ -185,7 +198,7 @@ void criaDefineTexturas()
 
     
     glGenTextures(1, &texture[4]);
-    glBindTexture(GL_TEXTURE_2D, texture[3]);
+    glBindTexture(GL_TEXTURE_2D, texture[4]);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -199,7 +212,7 @@ void criaDefineTexturas()
 }
 
 void initializeObjects() {
-    
+    initFog();
 
     camera = new Camera();
     map    = new Map();
@@ -238,7 +251,7 @@ void desenhaTexto(char *string, GLfloat x, GLfloat y, GLfloat z) {
 }
 
 
-
+/*
 void Draw_Skybox(float x, float y, float z, float width, float height, float length)
 {
 	// Center the Skybox around the given x,y,z position
@@ -246,9 +259,8 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 	y = y - height / 2;
 	z = z - length / 2;
     
-    
 	// Draw Front side
-	glBindTexture(GL_TEXTURE_2D, texture[4]);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glBegin(GL_QUADS);
     glTexCoord2f(1.0f, 0.0f); glVertex3f(x,		  y,		z+length);
     glTexCoord2f(1.0f, 1.0f); glVertex3f(x,		  y+height, z+length);
@@ -257,7 +269,7 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 	glEnd();
     
 	// Draw Back side
-	glBindTexture(GL_TEXTURE_2D, texture[4]);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glBegin(GL_QUADS);
     glTexCoord2f(1.0f, 0.0f); glVertex3f(x+width, y,		z);
     glTexCoord2f(1.0f, 1.0f); glVertex3f(x+width, y+height, z);
@@ -266,7 +278,7 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 	glEnd();
     
 	// Draw Left side
-	glBindTexture(GL_TEXTURE_2D, texture[4]);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glBegin(GL_QUADS);
     glTexCoord2f(1.0f, 1.0f); glVertex3f(x,		  y+height,	z);
     glTexCoord2f(0.0f, 1.0f); glVertex3f(x,		  y+height,	z+length);
@@ -275,7 +287,7 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 	glEnd();
     
 	// Draw Right side
-	glBindTexture(GL_TEXTURE_2D, texture[4]);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(x+width, y,		z);
     glTexCoord2f(1.0f, 0.0f); glVertex3f(x+width, y,		z+length);
@@ -284,7 +296,7 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 	glEnd();
     
 	// Draw Up side
-	glBindTexture(GL_TEXTURE_2D, texture[4]);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(x+width, y+height, z);
     glTexCoord2f(1.0f, 0.0f); glVertex3f(x+width, y+height, z+length);
@@ -293,7 +305,7 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 	glEnd();
     
 	// Draw Down side
-	glBindTexture(GL_TEXTURE_2D, texture[4]);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(x,		  y,		z);
     glTexCoord2f(1.0f, 0.0f); glVertex3f(x,		  y,		z+length);
@@ -302,6 +314,7 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 	glEnd();
     
 }
+ */
 
 
 
