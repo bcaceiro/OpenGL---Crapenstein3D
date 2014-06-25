@@ -12,7 +12,6 @@
 //Constructor
 Room::Room(GLfloat roomPosX, GLfloat roomPosY, GLfloat roomPosZ, GLfloat leftWallWidth, GLfloat roomHeight, GLfloat backWallWidth, bool isLeftWallActive, bool isBackWallActive, bool isRightWallActive, bool isFrontWallActive) {
 
-
     posX          = roomPosX;
     posY          = roomPosY;
     posZ          = roomPosZ;
@@ -24,26 +23,35 @@ Room::Room(GLfloat roomPosX, GLfloat roomPosY, GLfloat roomPosZ, GLfloat leftWal
     backWallActive  = isBackWallActive;
     rightWallActive = isRightWallActive;
     frontWallActive = isFrontWallActive;
-    
+
 
 }
 
 
 void Room::buildRoom() {
     
-    if(leftWallActive)
+    if(leftWallActive) {
         leftWall = new Wall (posX, posY, posZ, leftWidth, height, 1);
+        collidableObjects.push_back(leftWall);
+    }
     
-    if(backWallActive)
+    if(backWallActive) {
         backWall = new Wall(posX, posY, posZ, backWidth, height, 2);
+        collidableObjects.push_back(backWall);
+    }
     
-    if(rightWallActive)
+    if(rightWallActive) {
         rightWall = new Wall (posX, posY, posZ + backWidth, leftWidth, height, 1);
-
-    if(frontWallActive)
+        collidableObjects.push_back(rightWall);
+    }
+    
+    if(frontWallActive) {
         frontWall = new Wall(posX + leftWidth,posY,posZ,backWidth,height,2);
+        collidableObjects.push_back(frontWall);
+    }
     
     floor = new Wall (posX,posY,posZ, leftWidth,backWidth,0);
+    collidableObjects.push_back(floor);
     
 }
     
