@@ -19,9 +19,9 @@ CollidingObject::CollidingObject(){
  */
 void CollidingObject::setBounds(float x, float y ,float z ,float thickness,float height,float width){
     //printf("Setting bounds\n");
-    this->collide_minX = x;
-    this->collide_minY = y;
-    this->collide_minZ = z;
+    this->collide_minX = x-thickness;
+    this->collide_minY = y-height;
+    this->collide_minZ = z-width;
     this->collide_maxX = x + thickness;
     this->collide_maxY = y + height;
     this->collide_maxZ = z + width;

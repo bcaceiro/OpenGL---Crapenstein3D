@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include "OpenGLIncludes.h"
+#include "Wall.h"
 #include "collidingObject.h"
 
 class DoorWall: public CollidingObject
@@ -46,6 +47,8 @@ private:
     int orientation;
     bool canOpenDoor;
     bool isOpen;
+    Wall* wall1;
+    Wall* wall2;
     GLint doorState;
     
     GLfloat aux;

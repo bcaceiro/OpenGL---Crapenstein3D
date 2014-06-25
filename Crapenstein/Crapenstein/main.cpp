@@ -70,16 +70,17 @@ Ball * bola2;
 Torch* huehuehue;
 
 bool openDoor = false;
-
+GLuint skyTexture[1];
 void drawScene() { 
     
-
     /*LUZESSSS*/
-    GLfloat ambientLight[4] = {0.1,0.1,0.1,1.0};
+    //luz vermelha situada perto da origem
+    GLfloat ambientLight[4] = {0.2,0.2,0.2,1.0};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
-    glEnable(GL_LIGHT0);
-    GLfloat lightPos[4] = {0, 1, 0, 1.0};
+
+    //glEnable(GL_LIGHT0);
+    /*GLfloat lightPos[4] = {0, 1, 0, 1.0};
 
     glLightfv(GL_LIGHT0,GL_POSITION, lightPos);
     GLfloat lightColor[4] = {255,0,0,1};
@@ -91,43 +92,39 @@ void drawScene() {
     glLightf(GL_LIGHT0,GL_QUADRATIC_ATTENUATION,	0.5);
     //glLightf(GL_LIGHT1,GL_SPOT_CUTOFF,				0.5);
     //glLightf(GL_LIGHT1,GL_SPOT_EXPONENT,			1);
+*/
+    //draw Skybox
+    //glDisable(GL_LIGHTING);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,skyTexture[0]);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glPushMatrix();
+            glColor4f(1.0,1.0,1.0,1.0);
+            glNormal3f(0.0f, 1.0f, 0.0f);
+                glBegin(GL_QUADS);
+                        glTexCoord2f(0.0f,0.0f);  glVertex3f( -5000,    51,  -5000);
+                        glTexCoord2f(1000.0f,0.0f);  glVertex3f(  5000,    51,  -5000);
+                        glTexCoord2f(1000.0f,1000.0f);  glVertex3f(  5000,    51,   5000);
+                        glTexCoord2f(0.0f,1000.0f);  glVertex3f( -5000,         51,   5000);
+                        glColor4f(1.0,1.0,1.0,1.0);
+                glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 
-    huehuehue->draw();
+    //huehuehue->draw();
     map->update();
 
     /* Update Robot */
     robotFofinho->drawRobot();
     bola1->update();
     bola2->update();
-    
-    
-    
+    if(camera->m_x>400)
+        glEnable(GL_FOG);
+    else
+        glDisable(GL_FOG);
 
-    //cuboTeste->draw();
-      //  cuboTeste2->draw();
-        //    cuboTeste3->draw();
-    
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
-        //white = x
-        //Red = y
-        //Blue = z
-
-        glColor4f(WHITE);
-        glBegin(GL_LINES);
-                glVertex3i( 0, 0, 0);
-                glVertex3i(100, 0, 0);
-        glEnd();
-        glColor4f(RED);
-        glBegin(GL_LINES);
-                glVertex3i(0,  0, 0);
-                glVertex3i(0, 100, 0);
-        glEnd();
-        glColor4f(BLUE);
-        glBegin(GL_LINES);
-                glVertex3i( 0, 0, 0);
-                glVertex3i( 0, 0,100);
-        glEnd();
 }
 
 void criaDefineTexturas()
@@ -179,7 +176,20 @@ void criaDefineTexturas()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        imag.LoadBmpFile("assets/parede3.bmp");
+        imag.LoadBmpFile("assets/wolf.bmp");
+        glTexImage2D(GL_TEXTURE_2D, 0, 3,
+        imag.GetNumCols(),
+            imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+            imag.ImageData());
+
+        glGenTextures(1, &skyTexture[0]);
+        glBindTexture(GL_TEXTURE_2D, skyTexture[0]);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        imag.LoadBmpFile("assets/chaleira.bmp");
         glTexImage2D(GL_TEXTURE_2D, 0, 3,
         imag.GetNumCols(),
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -192,7 +202,7 @@ void initializeObjects() {
 
     camera = new Camera();
 
-    huehuehue = new Torch(GL_LIGHT0+7,0,1,50);
+    huehuehue = new Torch(GL_LIGHT1,0,1,50);
 
 
     map    = new Map();
@@ -216,12 +226,12 @@ void initializeObjects() {
 }
 
 void initFog(void){
-    GLfloat nevoeiroCor[] = {0.75, 0.75, 0.75, 1.0};
+    GLfloat nevoeiroCor[] = {0.7, 0.7, 0.7, 1.0};
     glFogfv(GL_FOG_COLOR,nevoeiroCor);
 	glFogi(GL_FOG_MODE, GL_LINEAR); //Equao do nevoeiro - linear
-	glFogf(GL_FOG_START, 1); // Distncia a que ter incio o nevoeiro
+    glFogf(GL_FOG_START, 10); // Distncia a que ter incio o nevoeiro
 	glFogf(GL_FOG_END, 30); // Distncia a que o nevoeiro terminar
-	glFogf (GL_FOG_DENSITY, 0.5);
+    glFogf (GL_FOG_DENSITY, 0.3);
 }
 
 int main (int argc, char **argv) {
@@ -242,6 +252,7 @@ int main (int argc, char **argv) {
 
     criaDefineTexturas( );
     initializeObjects();
+    initFog();
 
     
 
@@ -286,8 +297,10 @@ void Display (void) {
         gluLookAt(a, 0, c, a, -5, c, q, 0, e);
         glPushMatrix();
 
+
         glClear( GL_COLOR_BUFFER_BIT);
-         glColor3f(0.1, 0.0, 0.0);
+
+        glColor3f(0.1, 0.0, 0.0);
          glBegin(GL_POLYGON);
           glVertex3f(a-100, -0.1, c-100);
           glVertex3f(a+100, -0.1, c-100);
@@ -295,6 +308,7 @@ void Display (void) {
           glVertex3f(a-100, -0.1, c+100);
          glEnd();
         glPopMatrix();
+
     drawScene();
 
     //draw the scene

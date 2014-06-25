@@ -15,7 +15,7 @@
 #include <vector>
 #include "collidingObject.h"
 #include "laser.h"
-#define NUM_LASERS 10
+#define NUM_LASERS 4
 
 using namespace std;
 extern vector<CollidingObject*> collidableObjects;
@@ -48,6 +48,7 @@ public:
     void RotatePitch(float angle);
     void Move(float incr);
     void Strafe(float incr);
+    void drawFlashLight();
     
 private:
     GLfloat posX;

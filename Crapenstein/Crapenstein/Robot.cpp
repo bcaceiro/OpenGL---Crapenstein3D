@@ -28,6 +28,7 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
     this->m_pitch = 0.0;
     posX = robotPosX;
     posY = robotPosY;
+    //posY = 20;
     posZ = robotPosZ;
     torsoRadius = RobotTorsoRadius;
     cam = globalCamera;
@@ -41,6 +42,7 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
     for(int i =0; i < NUM_LASERS;++i){
         lasers[i] = NULL;
     }
+    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
 }
 
 
@@ -65,6 +67,7 @@ void Robot::drawRobot() {
         drawRobotArms(0.5, 3, 2, posX - 1,posY - 2,posZ);
     glPopMatrix();
     drawLasers();
+    drawFlashLight();
 }
 
 void Robot::drawRobotEyes(GLfloat radius , GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat eyeDistance) {
@@ -135,12 +138,12 @@ void Robot:: drawRobotArms(GLfloat radius, GLfloat length, GLfloat armsDistance,
 
 void Robot::fireLaser()
 {
-    m_lx = cos(m_yaw) * cos(m_pitch);
-    m_ly = sin(m_pitch);
-    m_lz = sin(m_yaw) * cos(m_pitch);
+    m_lx = cos(m_yaw) * cos(m_pitch+M_PI_4/2);
+    m_ly = sin(m_pitch+M_PI_4/2);
+    m_lz = sin(m_yaw) * cos(m_pitch+M_PI_4/2);
     for(int i=0; i < NUM_LASERS;++i){
         if(lasers[i]==NULL){
-            lasers[i] = new Laser(posX,posY,posZ,m_lx,m_ly,m_lz,m_yaw,m_pitch);
+            lasers[i] = new Laser(posX,posY,posZ,m_lx,m_ly,m_lz,m_yaw-M_PI_4/4,m_pitch,GL_LIGHT7-i);
             return;
         }
     }
@@ -161,6 +164,7 @@ void Robot::updateLasers(){
             if(lasers[i]->isColliding()){
                 delete lasers[i];
                 lasers[i] = NULL;
+                glDisable(GL_LIGHT7-i);
             }
         }
     }
@@ -190,17 +194,17 @@ void Robot::Strafe(float incr)
     posX = posX + incr*m_strafe_lx;
     posZ = posZ + incr*m_strafe_lz;
 
-    this->setBounds(posX,posY,posZ,1.3,1.3,5);
+    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
     unsigned int vector_size = collidableObjects.size();
     for(unsigned int i = 0; i < vector_size; ++i){
         if(((CollidingObject*)collidableObjects[i])->isColliding(this)){
             posX-=incr*m_strafe_lx;
             posZ-=incr*m_strafe_lz;
-            this->setBounds(posX,posY,posZ,1.3,1.3,5);
+            this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
             return;
         }
     }
-    this->setBounds(posX,posY,posZ,1.3,1.3,5);
+    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
     cam->Strafe(incr);
 }
 
@@ -216,18 +220,52 @@ void Robot::Move(float incr)
     posZ = posZ + incr*lz;
 
 
-    this->setBounds(posX,posY,posZ,1.3,1.3,5);
+    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
     unsigned int vector_size = collidableObjects.size();
     for(unsigned int i = 0; i < vector_size; ++i){
         if(((CollidingObject*)collidableObjects[i])->isColliding(this)){
             posZ-=incr*lz;
             posX-=incr*lx;
-            this->setBounds(posX,posY,posZ,1.3,1.3,5);
+            this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
             return;
         }
     }
-    this->setBounds(posX,posY,posZ,1.3,1.3,5);
+    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
     cam->Move(incr);
 }
+
+void Robot::drawFlashLight(){
+    glEnable(GL_LIGHT3);
+    GLfloat x,y,z;
+    cam->GetDirectionVector(x,y,z);
+
+
+    m_lx = cos(m_yaw) * cos(m_pitch-M_PI_4);
+    m_ly = sin(m_pitch-M_PI_4);
+    m_lz = sin(m_yaw) * cos(m_pitch-M_PI_4);
+   /* m_lx = cos(m_yaw) * cos(m_pitch);
+    m_ly = sin(m_pitch);
+    m_lz = sin(m_yaw) * cos(m_pitch);*/
+
+
+    GLfloat lightTarget[3] = {m_lx, m_ly, m_lz};
+    //GLfloat lightTarget[4] = {0, -1, 0, 1.0};
+    //GLfloat lightPos[4] = {posX, posY, posZ,1.0};
+    GLfloat lightPos[4] = {posX, posY, posZ,1.0};
+    GLfloat lightColor[4] = {0.4,0.4,0.4,1};
+    glLightfv(GL_LIGHT3,GL_AMBIENT, lightColor);
+    glLightfv(GL_LIGHT3,GL_DIFFUSE, lightColor);
+    glLightfv(GL_LIGHT3,GL_SPECULAR, lightColor);
+
+    glLightf(GL_LIGHT3,GL_CONSTANT_ATTENUATION,		1);
+    glLightf(GL_LIGHT3,GL_LINEAR_ATTENUATION,		0.0);
+    glLightf(GL_LIGHT3,GL_QUADRATIC_ATTENUATION,	0.0);
+
+    glLightfv(GL_LIGHT3,GL_POSITION, lightPos);
+    glLightfv(GL_LIGHT3,GL_SPOT_DIRECTION,lightTarget);
+    glLightf(GL_LIGHT3,GL_SPOT_CUTOFF,              15);
+    glLightf(GL_LIGHT3,GL_SPOT_EXPONENT,			5);
+}
+
 
 #endif

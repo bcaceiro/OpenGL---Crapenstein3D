@@ -40,12 +40,15 @@ void Ball::update() {
         y = radius;
         direction = 1;
     }
+    GLUquadricObj *quadratic3;
+    quadratic3 = gluNewQuadric();
     glColor4f(1.0, 0.0, 0.0, 1.0);
     glPushMatrix();
-    glTranslated(x, y, z);
-    glutSolidSphere(radius, 30, 30);
+        gluQuadricOrientation(quadratic3,GLU_OUTSIDE);
+        glTranslated(x, y, z);
+        glutSolidSphere(radius, 30, 30);
     glPopMatrix();
-    
+
 }
 
 #endif
