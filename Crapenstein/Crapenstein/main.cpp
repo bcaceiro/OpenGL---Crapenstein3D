@@ -47,6 +47,7 @@ GLint wScreen=800, hScreen=600;
 bool keyStates[256] = {false};
 bool specialKeyStates[256] = {false};
 bool g_fps_mode = false;
+//bool g_mouse_left_down = false;
 // Movement settings
 const float g_translation_speed = 0.5;
 const float g_rotation_speed = M_PI/180*0.2;
@@ -65,9 +66,31 @@ Cube* cuboTeste3;
 
 Ball * bola1;
 Ball * bola2;
+Torch* huehuehue;
 
 void drawScene(){
 
+
+    /*LUZESSSS*/
+    GLfloat ambientLight[4] = {0.1,0.1,0.1,1.0};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+
+    glEnable(GL_LIGHT0);
+    GLfloat lightPos[4] = {0, 1, 0, 1.0};
+
+    glLightfv(GL_LIGHT0,GL_POSITION, lightPos);
+    GLfloat lightColor[4] = {255,0,0,1};
+    glLightfv(GL_LIGHT0,GL_DIFFUSE, lightColor);
+    glLightfv(GL_LIGHT0,GL_SPECULAR, lightColor);
+
+    glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION,	1);
+    glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION,		0.5);
+    glLightf(GL_LIGHT0,GL_QUADRATIC_ATTENUATION,	0.5);
+    //glLightf(GL_LIGHT1,GL_SPOT_CUTOFF,				0.5);
+    //glLightf(GL_LIGHT1,GL_SPOT_EXPONENT,			1);
+
+
+    huehuehue->draw();
     map->update();
     testeDoor->draw();
         /* merdas robot */
@@ -77,10 +100,6 @@ void drawScene(){
     cuboTeste->draw();
         cuboTeste2->draw();
             cuboTeste3->draw();
-        /*LUZESSSS*/
-        GLfloat lightPos[4] = {5, 5,5, 1.0};
-        glLightfv(GL_LIGHT1,GL_POSITION, lightPos);
-
     
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
         //white = x
@@ -102,8 +121,6 @@ void drawScene(){
                 glVertex3i( 0, 0, 0);
                 glVertex3i( 0, 0,100);
         glEnd();
-
-
 }
 
 void criaDefineTexturas()
@@ -166,7 +183,10 @@ void criaDefineTexturas()
 void initializeObjects() {
     
     camera = new Camera();
-    
+
+    huehuehue = new Torch(GL_LIGHT0+7,0,1,50);
+
+
     map = new Map();
     testeDoor = new DoorWall(100,0,0,50,15,2);
 
@@ -208,13 +228,13 @@ int main (int argc, char **argv) {
 
     glClearColor(BLACK);
     glShadeModel(GL_SMOOTH);
-    criaDefineTexturas( );
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
-    
+
+
+    criaDefineTexturas( );
     initializeObjects();
 
-    Torch* huehuehue = new Torch();
     /*collidableObjects.push_back(parede1);
     collidableObjects.push_back(parede2);
     collidableObjects.push_back(parede3);
@@ -225,25 +245,6 @@ int main (int argc, char **argv) {
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
-    
-    GLfloat ambientLight[4] = {0.85,0.85,0.85,1.0};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
-    
-    
-    glEnable(GL_LIGHT1);
-    GLfloat lightPos[4] = {8, 6,5, 1.0};
-    glLightfv(GL_LIGHT1,GL_POSITION, lightPos);
-    GLfloat lightColor[4] = {255,0,0,1};
-	glLightfv(GL_LIGHT1,GL_DIFFUSE,					lightColor);
-    glLightfv(GL_LIGHT1,GL_SPECULAR,					lightColor);
-    
-    glLightf(GL_LIGHT1,GL_CONSTANT_ATTENUATION,	1);
-    glLightf(GL_LIGHT1,GL_LINEAR_ATTENUATION,		0.5);
-    glLightf(GL_LIGHT1,GL_QUADRATIC_ATTENUATION,	0.5);
-    glLightf(GL_LIGHT1,GL_SPOT_CUTOFF,				0.5);
-    glLightf(GL_LIGHT1,GL_SPOT_EXPONENT,			1);
-
-    
 
     glutIgnoreKeyRepeat(1);
     glutDisplayFunc(Display);
@@ -267,7 +268,7 @@ void Display (void) {
     glClearColor (0.0,0.0,0.0,1.0); //clear the screen to black
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
     //glLoadIdentity();
-
+    //draw the minimap
     glViewport (0, 0, g_viewport_width/4, g_viewport_height/4);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -282,7 +283,7 @@ void Display (void) {
         glPushMatrix();
 
         glClear( GL_COLOR_BUFFER_BIT);
-         glColor3f(1.0, 0.0, 0.0);
+         glColor3f(0.1, 0.0, 0.0);
          glBegin(GL_POLYGON);
           glVertex3f(a-100, -0.1, c-100);
           glVertex3f(a+100, -0.1, c-100);
@@ -290,9 +291,9 @@ void Display (void) {
           glVertex3f(a-100, -0.1, c+100);
          glEnd();
         glPopMatrix();
-
     drawScene();
 
+    //draw the scene
     glViewport (0, 0, (GLsizei)g_viewport_width , (GLsizei)g_viewport_height); //set the viewport to the current window specifications
         glMatrixMode (GL_PROJECTION); //set the matrix to projection
         glLoadIdentity();
@@ -334,12 +335,11 @@ void Timer(int value)
             robotFofinho->Strafe(-g_translation_speed);
         }
 
-
-
         if(keyStates['p']) {
             testeDoor->openDoor();
         }
     }
+    robotFofinho->updateLasers();
     glutTimerFunc(1, Timer, 0);
 }
 
@@ -384,20 +384,14 @@ void specialkeyUp(int key, int x, int y)
 
 void Mouse(int button, int state, int x, int y)
 {
-    /*if(state == GLUT_DOWN) {
+    if(state == GLUT_DOWN) {
         if(button == GLUT_LEFT_BUTTON) {
-            g_mouse_left_down = true;
-        }
-        else if(button == GLUT_RIGHT_BUTTON) {
-            g_mouse_right_down = true;
+           robotFofinho->fireLaser();
         }
     }
-    else if(state == GLUT_UP) {
+    /*else if(state == GLUT_UP) {
         if(button == GLUT_LEFT_BUTTON) {
             g_mouse_left_down = false;
-        }
-        else if(button == GLUT_RIGHT_BUTTON) {
-            g_mouse_right_down = false;
         }
     }*/
 }

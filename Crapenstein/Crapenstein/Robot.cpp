@@ -16,6 +16,7 @@
 #include "Camera.h"
 #include "OpenGLIncludes.h"
 #include "collidingObject.h"
+#include "laser.h"
 
 const float limit = 89.0 * M_PI / 180.0;
 
@@ -37,6 +38,9 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
     //esta é só para se ver logo o robot
     cam->SetPitch(-0.5);
     this->m_pitch = -0.5;
+    for(int i =0; i < NUM_LASERS;++i){
+        lasers[i] = NULL;
+    }
 }
 
 
@@ -59,8 +63,8 @@ void Robot::drawRobot() {
         drawRobotTorso(torsoRadius, 7.0, posX, posY, posZ);
         //drawRobotArms(0.5, 3, 2, 4,3,3);
         drawRobotArms(0.5, 3, 2, posX - 1,posY - 2,posZ);
-
     glPopMatrix();
+    drawLasers();
 }
 
 void Robot::drawRobotEyes(GLfloat radius , GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat eyeDistance) {
@@ -127,6 +131,39 @@ void Robot:: drawRobotArms(GLfloat radius, GLfloat length, GLfloat armsDistance,
         quadratic3 = gluNewQuadric();
         gluCylinder(quadratic3,radius,radius,length,32,32);
     glPopMatrix();
+}
+
+void Robot::fireLaser()
+{
+    m_lx = cos(m_yaw) * cos(m_pitch);
+    m_ly = sin(m_pitch);
+    m_lz = sin(m_yaw) * cos(m_pitch);
+    for(int i=0; i < NUM_LASERS;++i){
+        if(lasers[i]==NULL){
+            lasers[i] = new Laser(posX,posY,posZ,m_lx,m_ly,m_lz,m_yaw,m_pitch);
+            return;
+        }
+    }
+}
+
+void Robot::drawLasers(){
+    for(unsigned int i = 0; i < NUM_LASERS; ++i){
+        if(lasers[i]!=NULL){
+            lasers[i]->draw();
+        }
+    }
+}
+
+void Robot::updateLasers(){
+    for(unsigned int i = 0; i < NUM_LASERS; ++i){
+        if(lasers[i]!=NULL){
+            lasers[i]->update();
+            if(lasers[i]->isColliding()){
+                delete lasers[i];
+                lasers[i] = NULL;
+            }
+        }
+    }
 }
 
 void Robot::RotateYaw(float angle)

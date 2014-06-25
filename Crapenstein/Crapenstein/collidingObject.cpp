@@ -18,7 +18,7 @@ CollidingObject::CollidingObject(){
  * @param width     largura (espessura do z)
  */
 void CollidingObject::setBounds(float x, float y ,float z ,float thickness,float height,float width){
-    printf("Setting bounds\n");
+    //printf("Setting bounds\n");
     this->collide_minX = x;
     this->collide_minY = y;
     this->collide_minZ = z;
@@ -28,7 +28,15 @@ void CollidingObject::setBounds(float x, float y ,float z ,float thickness,float
 
 }
 bool CollidingObject::isColliding(CollidingObject* obj){
-    printf("Not implemented!\n");
+    printf("Default collide\n");
+    if(this->collide_minX < obj->collide_maxX && this->collide_maxX > obj->collide_minX){
+        if(this->collide_minY < obj->collide_maxY && this->collide_maxY > obj->collide_minY){
+           if(this->collide_minZ < obj->collide_maxZ && this->collide_maxZ > obj->collide_minZ){
+               return true;
+            }
+        }
+    }
+    //printf("Not Colliding...\n");
     return false;
 }
 

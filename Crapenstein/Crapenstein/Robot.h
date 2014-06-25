@@ -14,10 +14,11 @@
 #include "Camera.h"
 #include <vector>
 #include "collidingObject.h"
+#include "laser.h"
+#define NUM_LASERS 10
 
 using namespace std;
 extern vector<CollidingObject*> collidableObjects;
-extern vector<CollidingObject*>::iterator collidableObjectsIterator;
 
 
 class Robot : public CollidingObject
@@ -36,7 +37,9 @@ public:
     void drawRobotHead(GLfloat radius , GLfloat posX, GLfloat posY, GLfloat posZ);
     void drawRobotTorso(GLfloat radius,GLfloat height, GLfloat posX, GLfloat posY, GLfloat posZ);
     void drawRobotArms(GLfloat radius, GLfloat length, GLfloat armsDistance, GLfloat posX, GLfloat posY, GLfloat posZ);
-    void laserPower(GLfloat posX, GLfloat posY, GLfloat posZ);
+    void fireLaser();
+    void updateLasers();
+    void drawLasers();
     /*void moveLeft();
     void moveRight();
     void moveFront();
@@ -56,6 +59,7 @@ private:
     float m_lx, m_ly, m_lz; // Direction vector of where we are looking at
     float m_yaw, m_pitch; // Various rotation angles
     float m_strafe_lx, m_strafe_lz; // Always 90 degree to direction vector
+    Laser* lasers[NUM_LASERS];
     
 };
 
