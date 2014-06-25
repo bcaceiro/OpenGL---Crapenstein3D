@@ -38,11 +38,14 @@ void Reshape (int w, int h);
 void Timer(int value);
 void Idle();
 void initFog();
+void desenhaTexto(char *string, GLfloat x, GLfloat y, GLfloat z);
 
 Camera* camera;
 vector<CollidingObject*> collidableObjects;
 vector<CollidingObject*>::iterator collidableObjectsIterator;
-GLuint  texture[4];
+GLuint  texture[5];
+
+bool enableFog = false;
 
 GLint wScreen=800, hScreen=600;
 bool keyStates[256] = {false};
@@ -69,9 +72,127 @@ Ball * bola1;
 Ball * bola2;
 Torch* huehuehue;
 
+
+char     texto[30];
+char     paused[30];
+
 bool openDoor = false;
 GLuint skyTexture[1];
-void drawScene() { 
+const float BOX_SIZE = 3.0f; //The length of each side of the cube
+const float BOX_HEIGHT = BOX_SIZE; //The height of the box off of the ground
+const float FLOOR_SIZE = 10.0f; //The length of each side of the floor
+
+float angle;
+
+
+bool isPaused = false;
+
+
+//Draws the cube
+void drawCube(float angle) {
+    
+    
+    glPushMatrix();
+    glTranslatef(20,10,10);
+    
+	glDisable(GL_TEXTURE_2D);
+	
+	glPushMatrix();
+	glRotatef(-angle, 1.0f, 1.0f, 0.0f);
+	
+	glBegin(GL_QUADS);
+	
+	//Top face
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glNormal3f(0.0, 1.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	
+	//Bottom face
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glNormal3f(0.0, -1.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	
+	//Left face
+	glNormal3f(-1.0, 0.0f, 0.0f);
+	glColor3f(0.0f, 1.0f, 1.0f);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	
+	//Right face
+	glNormal3f(1.0, 0.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	
+	glEnd();
+	
+    
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glBegin(GL_QUADS);
+	
+	//Front face
+	glNormal3f(0.0, 0.0f, 1.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+	
+	//Back face
+	glNormal3f(0.0, 0.0f, -1.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+	
+	glEnd();
+	
+	glPopMatrix();
+    glPopMatrix();
+}
+
+//Draws the floor
+void drawFloor() {
+
+    
+    glPushMatrix();
+    glTranslatef(20,5,10);
+	glBegin(GL_QUADS);
+	
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(-FLOOR_SIZE / 2, 0, FLOOR_SIZE / 2);
+	glTexCoord2f(0, 1);
+	glVertex3f(-FLOOR_SIZE / 2, 0, -FLOOR_SIZE / 2);
+	glTexCoord2f(1, 1);
+	glVertex3f(FLOOR_SIZE / 2, 0, -FLOOR_SIZE / 2);
+	glTexCoord2f(1, 0);
+	glVertex3f(FLOOR_SIZE / 2, 0, FLOOR_SIZE / 2);
+	
+	glEnd();
+        glPopMatrix();
+}
+
+void drawScene() {
     
     /*LUZESSSS*/
     //luz vermelha situada perto da origem
@@ -79,13 +200,65 @@ void drawScene() {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
 
+
     //glEnable(GL_LIGHT0);
     /*GLfloat lightPos[4] = {0, 1, 0, 1.0};
-
+    
     glLightfv(GL_LIGHT0,GL_POSITION, lightPos);
     GLfloat lightColor[4] = {255,0,0,1};
     glLightfv(GL_LIGHT0,GL_DIFFUSE, lightColor);
     glLightfv(GL_LIGHT0,GL_SPECULAR, lightColor);
+    
+    angle += 1.0f;
+	if (angle > 360) {
+		angle -= 360;
+	}
+    
+    
+    
+
+	glPushMatrix();
+    	drawCube(angle);
+	glPopMatrix();
+    
+
+
+	glEnable(GL_STENCIL_TEST); //Enable using the stencil buffer
+	glColorMask(0, 0, 0, 0); //Disable drawing colors to the screen
+	glDisable(GL_DEPTH_TEST); //Disable depth testing
+	glStencilFunc(GL_ALWAYS, 1, 1); //Make the stencil test always pass
+	//Make pixels in the stencil buffer be set to 1 when the stencil test passes
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	//Set all of the pixels covered by the floor to be 1 in the stencil buffer
+	drawFloor();
+	
+	glColorMask(1, 1, 1, 1); //Enable drawing colors to the screen
+	glEnable(GL_DEPTH_TEST); //Enable depth testing
+	//Make the stencil test pass only when the pixel is 1 in the stencil buffer
+	glStencilFunc(GL_EQUAL, 1, 1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); //Make the stencil buffer not change
+	
+	//Draw the cube, reflected vertically, at all pixels where the stencil
+	//buffer is 1
+	glPushMatrix();
+	glScalef(1, -1, 1);
+	drawCube(angle);
+	glPopMatrix();
+	
+	glDisable(GL_STENCIL_TEST); //Disable using the stencil buffer
+	
+	//Blend the floor onto the screen
+	glEnable(GL_BLEND);
+	glColor4f(1, 1, 1, 0.7f);
+	drawFloor();
+	glDisable(GL_BLEND);
+    
+    
+    
+
+    
+    
+    
 
     glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION,	1);
     glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION,		0.5);
@@ -124,8 +297,9 @@ void drawScene() {
         glEnable(GL_FOG);
     else
         glDisable(GL_FOG);
-
 }
+
+
 
 void criaDefineTexturas()
 {
@@ -195,10 +369,23 @@ void criaDefineTexturas()
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
             imag.ImageData());
 
+    
+    glGenTextures(1, &texture[4]);
+    glBindTexture(GL_TEXTURE_2D, texture[4]);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    imag.LoadBmpFile("assets/skyBox.bmp");
+    glTexImage2D(GL_TEXTURE_2D, 0, 3,
+                 imag.GetNumCols(),
+                 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+                 imag.ImageData());
 }
 
 void initializeObjects() {
-    
+    initFog();
 
     camera = new Camera();
 
@@ -234,10 +421,22 @@ void initFog(void){
     glFogf (GL_FOG_DENSITY, 0.3);
 }
 
+void desenhaTexto(char *string, GLfloat x, GLfloat y, GLfloat z) {
+	glRasterPos3f(x,y,z);
+	while(*string)
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, *string++);
+}
+
+
+
+
+
+
+
 int main (int argc, char **argv) {
     
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
     glutInitWindowSize(wScreen, hScreen);
     glutCreateWindow("CGenstein");
 
@@ -254,12 +453,25 @@ int main (int argc, char **argv) {
     initializeObjects();
     initFog();
 
-    
+        sprintf(texto, "Bruno Caceiro | David Cardoso");
+            sprintf(paused, "Paused");
 
     /* LIGHTS */
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+
+    glEnable(GL_DEPTH_TEST);
+
+
+
+
+
+
+    
 
     glutIgnoreKeyRepeat(1);
     glutDisplayFunc(Display);
@@ -280,10 +492,34 @@ int main (int argc, char **argv) {
 }
 
 void Display (void) {
+    
     glClearColor (0.0,0.0,0.0,1.0); //clear the screen to black
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
     //glLoadIdentity();
     //draw the minimap
+    
+    if(!isPaused) {
+                glEnable(GL_LIGHTING);
+    glViewport(g_viewport_width/2 + g_viewport_width/6 ,0,g_viewport_width/2 , g_viewport_height/5);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-20,20,-20,20,-20,20);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    
+    gluLookAt(1, 1, 1, 0, 0, 0, 0, 1, 0);
+    glPushMatrix();
+    
+    glClear( GL_COLOR_BUFFER_BIT);
+
+    glPopMatrix();
+    desenhaTexto(texto, -15, -15, 0);
+    
+
+    
+    
+
+
     glViewport (0, 0, g_viewport_width/4, g_viewport_height/4);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -308,16 +544,44 @@ void Display (void) {
           glVertex3f(a-100, -0.1, c+100);
          glEnd();
         glPopMatrix();
+    
+        drawScene();
+    
+    
 
-    drawScene();
 
-    //draw the scene
+
+
+
     glViewport (0, 0, (GLsizei)g_viewport_width , (GLsizei)g_viewport_height); //set the viewport to the current window specifications
         glMatrixMode (GL_PROJECTION); //set the matrix to projection
         glLoadIdentity();
         gluPerspective (60, (GLfloat)g_viewport_width / (GLfloat)g_viewport_height, 0.1 , 1000.0); //set the perspective (angle of sight, width, height, ,depth)
         camera->Refresh();
     drawScene();
+    }
+    
+    else {
+        
+        glDisable(GL_LIGHTING);
+        glViewport(0,0,g_viewport_width, g_viewport_height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(-20,20,-20,20,-20,20);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        
+        gluLookAt(5, 5, 5, 0, 0, 0, 0 , 1, 0);
+        glPushMatrix();
+        
+        glClear( GL_COLOR_BUFFER_BIT);
+        
+        glPopMatrix();
+        glColor4f(1.0, 1.0, 1.0,1.0);
+        desenhaTexto(paused, 1, 1, 1);
+        
+    }
+
 
     glutSwapBuffers(); //swap the buffers
 }
@@ -393,6 +657,9 @@ void KeyboardUp(unsigned char key, int x, int y)
     
     if(key == 'f')
         initFog();
+    
+    if(key == 'b')
+        isPaused = !isPaused;
     
     keyStates[tolower(key)] = false;
 }

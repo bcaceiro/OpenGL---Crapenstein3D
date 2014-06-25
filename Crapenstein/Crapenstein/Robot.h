@@ -49,9 +49,10 @@ public:
     void Move(float incr);
     void Strafe(float incr);
     void drawFlashLight();
+        GLfloat posX;
     
 private:
-    GLfloat posX;
+
     GLfloat posY;
     GLfloat posZ;
     GLfloat torsoRadius;
