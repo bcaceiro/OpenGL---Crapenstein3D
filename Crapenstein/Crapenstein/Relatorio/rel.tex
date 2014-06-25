@@ -108,9 +108,10 @@ No nosso projeto utilizámos 4 diferentes \emph{Viewports}:
 \end{itemize}
 
 \section{Iluminação}
+No nosso jogo temos 8 luzes diferentes, uma ambiente e outras 7 personalizadas, devido à limitação do \emph{OpenGL}. 
 
 \section{Colisões}
-
+Para as colisões definimos uma \emph{bounding box} a envolver cada objecto (paredes, portas,..). Seguidamente colocamos todos os objectos que têm colisões num array e testamos a colisão. Verificamos o x, y, z dos objectos em relação ao jogador.
 \section{Texturas}
 As texturas são aplicadas no mapa do jogo, mais concretamente nas portas, chão, paredes e na \emph{SkyBox}. Tivemos um cuidado especial ao fazer \emph{load} das texturas, utilizando o \emph{GL\_MODULATE} para ter em conta a cor dos vértices e da textura, de forma a permitir os efeitos de iluminação desejados.
 
