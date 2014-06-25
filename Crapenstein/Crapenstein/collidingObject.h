@@ -1,6 +1,7 @@
 #ifndef COLLIDINGOBJECT_H
 #define COLLIDINGOBJECT_H
 
+#include "OpenGLIncludes.h"
 class CollidingObject
 {
 public:
@@ -14,6 +15,7 @@ public:
     CollidingObject();
     virtual bool isColliding(CollidingObject* object);
     virtual void setBounds(float x, float y ,float z ,float thickness,float height,float width);
+    void drawBoundingBox();
 };
 
 

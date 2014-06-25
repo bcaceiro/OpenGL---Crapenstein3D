@@ -21,6 +21,7 @@ public:
     GLfloat m_yaw;
     GLfloat m_pitch;
     GLenum lightNumber;
+    GLfloat lightColor[4];
     bool isColliding();
 };
 

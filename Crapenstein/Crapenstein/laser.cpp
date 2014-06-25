@@ -18,29 +18,54 @@ Laser::Laser(GLfloat x,GLfloat y,GLfloat z,GLfloat dx,GLfloat dy,GLfloat dz,GLfl
     aux = aux/M_PI;
     this->m_pitch = aux;
     this->lightNumber = number;
-    this->setBounds(x,y,z,0.3,0.3,0.3);
+    this->setBounds(x-0.7,y-1,z-0.7,2.5,2,2.5);
+
+
+    //Props JN + JJAM
+    int rng = rand() % 9;
+
+    if(rng < 3)
+    {
+        lightColor[0] = 255;
+        lightColor[1] = 0;
+        lightColor[2] = 0;
+        lightColor[3] = 1;
+    }
+    else if(rng >= 3 && rng < 6)
+    {
+        lightColor[0] = 0;
+        lightColor[1] = 255;
+        lightColor[2] = 0;
+        lightColor[3] = 1;
+    }
+    else
+    {
+        lightColor[0] = 0;
+        lightColor[1] = 0;
+        lightColor[2] = 255;
+        lightColor[3] = 1;
+    }
     //printf("Cenas:(%f,%f)(%f,%f)\n",m_yaw,m_pitch,this->m_yaw,this->m_pitch);
 
 }
 void Laser::update(){
-    this->setBounds(x,y,z,0.3,0.3,0.3);
     this->x += this->dx;
     this->y += this->dy;
     this->z += this->dz;
+    this->setBounds(x-0.7,y-1,z-0.7,2.5,2,2.5);
 }
 void Laser::draw(){
 
     glEnable(lightNumber);
-    GLfloat lightPos[4] = {x, y, z, 1.0};
-
+    GLfloat lightPos[4] = {x,y,z,1};
     glLightfv(lightNumber,GL_POSITION, lightPos);
-    GLfloat lightColor[4] = {0,255,0,1};
+
     glLightfv(lightNumber,GL_DIFFUSE, lightColor);
     glLightfv(lightNumber,GL_SPECULAR, lightColor);
 
-    //glLightf(lightNumber,GL_CONSTANT_ATTENUATION,	1);
-    //glLightf(lightNumber,GL_LINEAR_ATTENUATION,		1);
-    glLightf(lightNumber,GL_QUADRATIC_ATTENUATION,	0.5);
+    glLightf(lightNumber,GL_CONSTANT_ATTENUATION,	0);
+    glLightf(lightNumber,GL_LINEAR_ATTENUATION,		10);
+    glLightf(lightNumber,GL_QUADRATIC_ATTENUATION,	0);
 
     glPushMatrix();
         glTranslatef(x,y,z);
@@ -48,21 +73,13 @@ void Laser::draw(){
         glRotatef(m_pitch,0,0,1);
         glutSolidTeapot(1);
     glPopMatrix();
-}
 
+}
 bool Laser::isColliding()
 {
-    if(this->x<0)
-        return true;
     if(this->y<0)
         return true;
     if(this->y>20)
-        return true;
-    if(this->x>500)
-        return true;
-    if(this->z<0)
-        return true;
-    if(this->z>500)
         return true;
 
     unsigned int vector_size = collidableObjects.size();

@@ -33,7 +33,7 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
     torsoRadius = RobotTorsoRadius;
     cam = globalCamera;
     //set the camera position
-    cam->SetPos(robotPosX,robotPosY+2,robotPosZ);
+    cam->SetPos(robotPosX-2,robotPosY+5,robotPosZ-2);
     //esta é precisa, para por o robot e a camera a apontar para o mesmo sitio
     cam->SetYaw(0.0);
     //esta é só para se ver logo o robot
@@ -42,7 +42,7 @@ Robot::Robot(GLfloat robotPosX,GLfloat robotPosY,GLfloat robotPosZ, GLfloat Robo
     for(int i =0; i < NUM_LASERS;++i){
         lasers[i] = NULL;
     }
-    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
+    setRobotBounds();
 }
 
 
@@ -68,6 +68,7 @@ void Robot::drawRobot() {
     glPopMatrix();
     drawLasers();
     drawFlashLight();
+    //drawBoundingBox();
 }
 
 void Robot::drawRobotEyes(GLfloat radius , GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat eyeDistance) {
@@ -194,17 +195,17 @@ void Robot::Strafe(float incr)
     posX = posX + incr*m_strafe_lx;
     posZ = posZ + incr*m_strafe_lz;
 
-    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
+    setRobotBounds();
     unsigned int vector_size = collidableObjects.size();
     for(unsigned int i = 0; i < vector_size; ++i){
         if(((CollidingObject*)collidableObjects[i])->isColliding(this)){
             posX-=incr*m_strafe_lx;
             posZ-=incr*m_strafe_lz;
-            this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
+            setRobotBounds();
             return;
         }
     }
-    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
+    setRobotBounds();
     cam->Strafe(incr);
 }
 
@@ -220,17 +221,18 @@ void Robot::Move(float incr)
     posZ = posZ + incr*lz;
 
 
-    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
+    setRobotBounds();
     unsigned int vector_size = collidableObjects.size();
     for(unsigned int i = 0; i < vector_size; ++i){
         if(((CollidingObject*)collidableObjects[i])->isColliding(this)){
+            //printf("COLIDIU, NÃO MEXER!\n");
             posZ-=incr*lz;
             posX-=incr*lx;
-            this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
+            setRobotBounds();
             return;
         }
     }
-    this->setBounds(posX,posY,posZ,1.3,1.3,1.3);
+    setRobotBounds();
     cam->Move(incr);
 }
 
@@ -267,5 +269,8 @@ void Robot::drawFlashLight(){
     glLightf(GL_LIGHT3,GL_SPOT_EXPONENT,			5);
 }
 
+void Robot::setRobotBounds(){
+    setBounds(posX-2,posY-2,posZ-2,4,2,4);
+}
 
 #endif

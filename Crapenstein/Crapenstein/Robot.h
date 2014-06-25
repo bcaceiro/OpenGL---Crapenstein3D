@@ -49,7 +49,8 @@ public:
     void Move(float incr);
     void Strafe(float incr);
     void drawFlashLight();
-        GLfloat posX;
+    GLfloat posX;
+    void setRobotBounds();
     
 private:
 

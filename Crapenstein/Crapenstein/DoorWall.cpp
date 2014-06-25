@@ -11,8 +11,11 @@
 #include <stdio.h>
 #include "OpenGLIncludes.h"
 #include "materiais.h"
+#include <vector>
+#include "collidingObject.h"
 
-extern GLuint texture[4];
+using namespace std;
+extern vector<CollidingObject*> collidableObjects;
 
 //Constructor
 DoorWall::DoorWall(float x,float y,float z,float width,float height,int orientation){
@@ -26,38 +29,39 @@ DoorWall::DoorWall(float x,float y,float z,float width,float height,int orientat
     this->orientation = orientation;
     canOpenDoor = false;
     isOpen = false;
+    playerColliding = false;
     doorState = 0;
     aux = 0;
 
     this->wall1 = new Wall(x,y,z,width/2-10,height,orientation);
-    if(orientation ==1)
-        this->wall2 = new Wall(x+width/2+10,y,z,width/2,height,orientation);
-    if(orientation ==2)
-        this->wall2 = new Wall(x,y,z+width/2+10,width/2,height,orientation);
+    collidableObjects.push_back((this->wall1));
 
-    //fix this!
     if(orientation == 1)
-        setBounds(x,y,z,width,height,0.4);
-    else if(orientation==2)
-        setBounds(x,y,z,0.4,height,width);
+        this->wall2 = new Wall(x+width/2+10,y,z,width/2-10,height,orientation);
+    if(orientation == 2)
+        this->wall2 = new Wall(x,y,z+width/2+10,width/2-10,height,orientation);
 
-    playerColliding = false;
-    
-    
+    collidableObjects.push_back((this->wall2));
+
+    //printf("Door(%f,%f,%f,%f,%f)\n",x,y,z,width,height);
+    if(orientation == 1)
+        setBounds(x,y,z,width,height,0.3);
+    else if(orientation==2)
+        setBounds(x,y,z,0.3,height,width);
+
   }
 void DoorWall::updateWalls() {
-        wall1->draw();
-        wall2->draw();
-
+    wall1->draw();
+    wall2->draw();
+    return;
    }
 
-
-
-
 void DoorWall:: updateDoors() {
+
     //Door Still
-    if( doorState == 0)
+    if( doorState == 0){
         aux = 0;
+    }
     
     //Open Door
     else if (doorState == 1) {
@@ -77,7 +81,6 @@ void DoorWall:: updateDoors() {
     
     glEnable(GL_COLOR_MATERIAL);
 
-    
     if(orientation == 1) {
         // Left Door
         glEnable(GL_TEXTURE_2D);
@@ -86,12 +89,14 @@ void DoorWall:: updateDoors() {
         glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
         glMaterialfv(GL_FRONT, GL_AMBIENT, esmeraldAmb);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, esmeraldDif);
+        glMaterialfv(GL_BACK, GL_AMBIENT, esmeraldAmb);
+        glMaterialfv(GL_BACK, GL_DIFFUSE, esmeraldDif);
         glPushMatrix();
             glBegin(GL_QUADS);
-                glTexCoord2f(0.0f,0.0f);  glVertex3f( x + width/2-10-aux ,  y,           z);
-                glTexCoord2f(1.0f,0.0f);  glVertex3f( x + width/2-aux,  y,               z);
-                glTexCoord2f(1.0f,1.0f);  glVertex3f( x + width/2-aux,  y+height,        z);
-                glTexCoord2f(0.0f,1.0f);  glVertex3f( x+width/2-10-aux,  y+height,       z);
+                glTexCoord2f(0.0f,0.0f);  glVertex3f( x + width/2-10-aux ,  y,               z);
+                glTexCoord2f(1.0f,0.0f);  glVertex3f( x + width/2-aux,      y,               z);
+                glTexCoord2f(1.0f,1.0f);  glVertex3f( x + width/2-aux,      y+height,        z);
+                glTexCoord2f(0.0f,1.0f);  glVertex3f( x + width/2-10-aux,   y+height,        z);
             glEnd();
             glPopMatrix();
         glDisable(GL_TEXTURE_2D);
@@ -102,43 +107,44 @@ void DoorWall:: updateDoors() {
         glBindTexture(GL_TEXTURE_2D,texture[0]);
         glPushMatrix();
             glBegin(GL_QUADS);
-                glTexCoord2f(0.0f,0.0f);  glVertex3f( x +width/2+10+aux,  y,         z);
-                glTexCoord2f(1.0f,0.0f);  glVertex3f( x +width/2+aux,  y,         z);
-                glTexCoord2f(1.0f,1.0f);  glVertex3f( x +width/2+aux,  y+height,  z);
-                glTexCoord2f(0.0f,1.0f);  glVertex3f( x+width/2+10+aux,  y+height,  z);
+                glTexCoord2f(0.0f,0.0f);  glVertex3f( x +width/2+10+aux,  y,          z);
+                glTexCoord2f(1.0f,0.0f);  glVertex3f( x +width/2+aux,     y,          z);
+                glTexCoord2f(1.0f,1.0f);  glVertex3f( x +width/2+aux,     y+height,   z);
+                glTexCoord2f(0.0f,1.0f);  glVertex3f( x+width/2+10+aux,   y+height,   z);
             glEnd();
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
+
     }
     
     
     if(orientation == 2) {
-    // Left Door
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texture[0]);
-    glPushMatrix();
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f,0.0f);  glVertex3f( x,  y,          z + width / 2 - 10 - aux);
-            glTexCoord2f(1.0f,0.0f);  glVertex3f( x,  y,          z + width / 2 - aux);
-            glTexCoord2f(1.0f,1.0f);  glVertex3f( x,  y + height, z + width / 2 - aux);
-            glTexCoord2f(0.0f,1.0f);  glVertex3f( x,  y + height, z + width / 2 - 10 - aux);
-        glEnd();
-    glPopMatrix();
-    glDisable(GL_TEXTURE_2D);
-    
-    
-    // Right Door
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texture[0]);
-    glPushMatrix();
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f,0.0f);   glVertex3f( x,  y,         z+width/2+10+aux);
-            glTexCoord2f(1.0f,0.0f);  glVertex3f( x,  y,         z+width/2+aux);
-            glTexCoord2f(1.0f,1.0f); glVertex3f( x,  y+height,  z+width/2+aux);
-            glTexCoord2f(0.0f,1.0f);  glVertex3f( x,  y+height,  z+width/2+10+aux);
-        glEnd();
-    glPopMatrix();
-    glDisable(GL_TEXTURE_2D);
+        // Left Door
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[0]);
+        glPushMatrix();
+            glBegin(GL_QUADS);
+                glTexCoord2f(0.0f,0.0f);  glVertex3f( x,  y,          z + width / 2 - 10 - aux);
+                glTexCoord2f(1.0f,0.0f);  glVertex3f( x,  y,          z + width / 2 - aux);
+                glTexCoord2f(1.0f,1.0f);  glVertex3f( x,  y + height, z + width / 2 - aux);
+                glTexCoord2f(0.0f,1.0f);  glVertex3f( x,  y + height, z + width / 2 - 10 - aux);
+            glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+
+
+        // Right Door
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,texture[0]);
+        glPushMatrix();
+            glBegin(GL_QUADS);
+                glTexCoord2f(0.0f,0.0f);   glVertex3f( x,  y,         z+width/2+10+aux);
+                glTexCoord2f(1.0f,0.0f);  glVertex3f( x,  y,         z+width/2+aux);
+                glTexCoord2f(1.0f,1.0f); glVertex3f( x,  y+height,  z+width/2+aux);
+                glTexCoord2f(0.0f,1.0f);  glVertex3f( x,  y+height,  z+width/2+10+aux);
+            glEnd();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
     }
     
     
@@ -152,7 +158,6 @@ void DoorWall::update() {
 
 void DoorWall::openDoor() {
     if(playerColliding) {
-
         if(doorState == 1) {
             doorState = 2;
         }
@@ -165,7 +170,6 @@ void DoorWall::openDoor() {
 
 
 bool DoorWall::isColliding(CollidingObject* obj) {
-
     //if(this->orientation!=0)
         //printf("CollisionTestX(%f,%f,%f,%f)\n",this->collide_minX,obj->collide_maxX,this->collide_maxX,obj->collide_minX);
     if(this->collide_minX < obj->collide_maxX && this->collide_maxX > obj->collide_minX){
@@ -176,6 +180,7 @@ bool DoorWall::isColliding(CollidingObject* obj) {
                 //printf("CollisionTestZ((%f,%f,%f,%f)\n",this->collide_minZ,obj->collide_maxZ,this->collide_maxZ,obj->collide_minZ);
             if(this->collide_minZ < obj->collide_maxZ && this->collide_maxZ > obj->collide_minZ){
                 //printf("Colliding(%d)...\n",orientation);
+                //printf("door colliding(doorState = %d)\n",doorState);
                 playerColliding = true;
                 if(doorState == 1 || doorState == 2)
                     return false;

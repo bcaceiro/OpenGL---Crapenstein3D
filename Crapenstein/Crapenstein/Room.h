@@ -19,7 +19,6 @@
 
 using namespace std;
 extern vector<CollidingObject*> collidableObjects;
-extern vector<CollidingObject*>::iterator collidableObjectsIterator;
 
 
 class Room

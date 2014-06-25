@@ -196,7 +196,7 @@ void drawScene() {
     
     /*LUZESSSS*/
     //luz vermelha situada perto da origem
-    GLfloat ambientLight[4] = {0.2,0.2,0.2,1.0};
+    GLfloat ambientLight[4] = {0.4,0.4,0.4,1.0};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
 
@@ -369,19 +369,6 @@ void criaDefineTexturas()
             imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
             imag.ImageData());
 
-    
-    glGenTextures(1, &texture[4]);
-    glBindTexture(GL_TEXTURE_2D, texture[4]);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    imag.LoadBmpFile("assets/skyBox.bmp");
-    glTexImage2D(GL_TEXTURE_2D, 0, 3,
-                 imag.GetNumCols(),
-                 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-                 imag.ImageData());
 }
 
 void initializeObjects() {
@@ -439,7 +426,7 @@ int main (int argc, char **argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
     glutInitWindowSize(wScreen, hScreen);
     glutCreateWindow("CGenstein");
-
+    srand(time(NULL));
     // Initialize the container of the collidableObjects
     collidableObjects.clear();
 

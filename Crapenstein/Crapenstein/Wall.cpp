@@ -19,9 +19,9 @@ Wall::Wall(float x,float y,float z,float width,float height,int orientation){
         setBounds(x,y,z,width,0.2,height);
     else*/
     if(orientation==1)
-        setBounds(x,y,z,width,height,0.2);
+        setBounds(x,y,z,width,height,0.5);
     else if(orientation==2)
-        setBounds(x,y,z,0.1,height,width);
+        setBounds(x,y,z,0.5,height,width);
 }
 void Wall::draw() {
     float aux =  width/10;
@@ -151,10 +151,10 @@ void Wall::draw() {
 
 bool Wall::isColliding(CollidingObject* obj){
 
-    printf("Cenas(%d)\n",orientation);
     if(this->collide_minX < obj->collide_maxX && this->collide_maxX > obj->collide_minX){
         if(this->collide_minY < obj->collide_maxY && this->collide_maxY > obj->collide_minY){
            if(this->collide_minZ < obj->collide_maxZ && this->collide_maxZ > obj->collide_minZ){
+               //printf("Cenas(%d)\n",orientation);
                return true;
             }
         }

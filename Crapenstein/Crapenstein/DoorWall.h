@@ -50,9 +50,7 @@ private:
     Wall* wall1;
     Wall* wall2;
     GLint doorState;
-    
     GLfloat aux;
-    
     bool playerColliding;
 };
 
