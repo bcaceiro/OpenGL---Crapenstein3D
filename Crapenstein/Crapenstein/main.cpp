@@ -197,9 +197,7 @@ void initializeObjects() {
 
     map = new Map();
     doorRoom1 = new DoorWall(100,0,0,50,15,2);
-
     doorRoom2 = new DoorWall(100,0,0,100,15,1);
-
     doorRoom4 = new DoorWall(100,0,50,100,15,1);
     doorRoom5 = new DoorWall(300,0,0,50,15,2);
     doorRoom6 = new DoorWall(300,0,0,100,15,1);
