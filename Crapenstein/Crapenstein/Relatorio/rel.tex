@@ -98,7 +98,7 @@ Bruno \textsc{Caceiro}  \\Número: 2008107991
 \emph{Crapenstein} é um jogo FPS onde o jogador se desloca num mundo e pode disparar lasers para acertar em objetos.
 
 
-\section{Viewports}
+\section{Viewport}
 No nosso projeto utilizámos 4 diferentes \emph{Viewports}:
 \begin{itemize}
 	\item Pausa
@@ -106,5 +106,17 @@ No nosso projeto utilizámos 4 diferentes \emph{Viewports}:
 	\item Nomes
 	\item Mapa principal
 \end{itemize}
+
+\section{Iluminação}
+
+\section{Texturas}
+As texturas são aplicadas no mapa do jogo, mais concretamente nas portas, chão, paredes e na \emph{SkyBox}. Tivemos um cuidado especial ao fazer \emph{load} das texturas, utilizando o \emph{GL\_MODULATE} para ter em conta a cor dos vértices e da textura, de forma a permitir os efeitos de iluminação desejados.
+
+\section{Transparências}
+Para implementar as transparências criámos uma classe \emph{Cube}, que desenha um cubo transparente, recorrendo à função \emph{BLEND}, da cor pretendida. Tivemos especial atenção em desenhar estes objetos no fim dos objectos opacos.   
+
+\section{Nevoeiro}
+Para implementar o nevoeiro recorremos às funções do \emph{OpenGL} (\emph{glFog}),onde definimos o tipo de equação do nevoeiro (linear), a densidade do nevoeiro e a distância onde termina o efeito. Este nevoeiro é ativo quando o jogador entra na última sala do jogo.
+
 
 \end{document}
