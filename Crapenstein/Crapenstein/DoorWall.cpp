@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include "OpenGLIncludes.h"
+#include "materiais.h"
 
 extern GLuint texture[4];
 
@@ -124,10 +125,17 @@ void DoorWall:: updateDoors() {
             doorState = 0;
     }
     
+    glEnable(GL_COLOR_MATERIAL);
+
+    
     if(orientation == 1) {
         // Left Door
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,texture[0]);
+        glEnable(GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+        glMaterialfv(GL_FRONT, GL_AMBIENT, esmeraldAmb);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, esmeraldDif);
         glPushMatrix();
             glBegin(GL_QUADS);
                 glTexCoord2f(0.0f,0.0f);  glVertex3i( x + width/2-10-aux ,  y,         z);
